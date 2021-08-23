@@ -14,15 +14,9 @@ namespace Attack
             go.transform.rotation = Quaternion.LookRotation(Vector3.forward, direction);
         }
         
-        // Update is called once per frame
-        void Update()
+        public void Update()
         {
             transform.Translate(Speed * Time.deltaTime * Vector3.up);
-        }
-
-        public void Destroy()
-        {
-            Destroy(gameObject);
         }
     }
 }

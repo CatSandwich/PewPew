@@ -10,20 +10,29 @@ namespace Player
         
         #region Upgrades
         private const string TRIPLE_SHOT_KEY = "triple_shot";
-        
-        public bool TripleShot;
-        #endregion
+        private const string HOMING_MISSILES_KEY = "homing_missiles";
 
-        public void Save()
+        public bool TripleShot
         {
-            SetBool(TRIPLE_SHOT_KEY, TripleShot);
+            get => _tripleShot;
+            set => SetBool(TRIPLE_SHOT_KEY, _tripleShot = value);
         }
+        private bool _tripleShot;
+        
+        public bool HomingMissiles
+        {
+            get => _homingMissiles;
+            set => SetBool(HOMING_MISSILES_KEY, _homingMissiles = value);
+        }
+        private bool _homingMissiles;
+        #endregion
 
         public static PlayerUpgrades Load()
         {
             return new PlayerUpgrades
             {
-                TripleShot = GetBool(TRIPLE_SHOT_KEY)
+                _tripleShot = GetBool(TRIPLE_SHOT_KEY),
+                _homingMissiles = GetBool(HOMING_MISSILES_KEY)
             };
         }
 
