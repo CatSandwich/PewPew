@@ -5,6 +5,8 @@ namespace Player
 {
     public class PlayerController : MonoBehaviour
     {
+        public static PlayerController Instance;
+        
         public PlayerUpgrades Upgrades;
         private readonly Vector3 UpRight = new Vector3(1f, 1f, 0f).normalized;
         private readonly Vector3 UpLeft = new Vector3(-1f, 1f, 0f).normalized;
@@ -14,6 +16,13 @@ namespace Player
         // Start is called before the first frame update
         void Start()
         {
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
             Upgrades = PlayerUpgrades.Load();
         }
 
@@ -36,6 +45,11 @@ namespace Player
                 Upgrades.TripleShot = !Upgrades.TripleShot;
             if (Input.GetKeyDown(KeyCode.H))
                 Upgrades.HomingMissiles = !Upgrades.HomingMissiles;
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                RayController.Instantiate(1);
+                RayController.Instantiate(-1);
+            }
             #endif
         }
 
