@@ -11,6 +11,8 @@ namespace Enemy.Movement
 
         public override void DoMovement(EnemyScript target)
         {
+            if (!WaveController.RunIsAlive) return;
+
             switch (target.MovementPhase)
             {
                 case 0:

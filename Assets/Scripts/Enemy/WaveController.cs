@@ -8,16 +8,21 @@ namespace Enemy
 {
     public class WaveController : MonoBehaviour
     {
-        public static WaveController Instance => FindObjectOfType<WaveController>().GetComponent<WaveController>() ?? new GameObject("WaveController", typeof(WaveController)).GetComponent<WaveController>();
+        public static WaveController Instance => _instance ??= FindObjectOfType<WaveController>();
+        private static WaveController _instance;
+
         public static float LeftBounds => Instance._leftBounds;
         public static float RightBounds => Instance._rightBounds;
         public static float TopBounds => Instance._topBounds;
+        public static bool RunIsAlive => Instance._runIsAlive;
+
+        private bool _runIsAlive;
 
         public Text DistanceDisplay;
         public GenericFormation[] WaveList;
 
         private GenericFormation _currentFormation;
-        private float _nextSpawn = 5;
+        private float _nextSpawn;
 
         private readonly System.Random Random = new System.Random();
 
@@ -33,15 +38,22 @@ namespace Enemy
         private bool _isBossWaveActive;
         private List<EnemyScript> _currentBosses = new List<EnemyScript>();
 
-        public void NormalEnemyDestroyed(EnemyScript enemy)
+        private float _distanceScore;
+
+        public void OnEnemyHitsEndZone(EnemyScript enemy)
+        {
+            _runIsAlive = false;
+        }
+
+        public void OnNormalEnemyDestroyed(EnemyScript enemy)
         {
             // A normal enemy has been defeated
         }
-        public void BonusEnemyDestroyed(EnemyScript enemy)
+        public void OnBonusEnemyDestroyed(EnemyScript enemy)
         {
             // A bonus enemy has been defeated
         }
-        public void BossEnemyDestroyed(EnemyScript enemy)
+        public void OnBossEnemyDestroyed(EnemyScript enemy)
         {
             if (!_currentBosses.Contains(enemy)) return;
             _currentBosses.Remove(enemy);
@@ -62,6 +74,9 @@ namespace Enemy
 
         private void Start()
         {
+            _runIsAlive = true;
+            _nextSpawn = Time.time + 5f;
+
             _bottomLeftBounds = Camera.main.ScreenToWorldPoint(Vector3.zero);
             _topRightBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height));
 
@@ -75,7 +90,15 @@ namespace Enemy
 
         private void Update()
         {
-            DistanceDisplay.text = $"Distance: {Time.time:N1}km\nWave: {_wave}\nBoss Wave: {_isBossWaveActive}\n" + (_isBossWaveActive ? $"Bosses Remaining: {_currentBosses.Count}\n" : "");
+            if (!_runIsAlive)
+            {
+                DistanceDisplay.text = $"Distance: {_distanceScore:N1}km\nWave: {_wave}\nBoss Wave: {_isBossWaveActive}\n" + (_isBossWaveActive ? $"Bosses Remaining: {_currentBosses.Count}\n" : "");
+                return;
+            }
+
+            _distanceScore = Time.time;
+
+            DistanceDisplay.text = $"Distance: {_distanceScore:N1}km\nWave: {_wave}\nBoss Wave: {_isBossWaveActive}\n" + (_isBossWaveActive ? $"Bosses Remaining: {_currentBosses.Count}\n" : "");
 
             if (Time.time > _nextSpawn)
                 SpawnEnemy();

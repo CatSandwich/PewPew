@@ -32,19 +32,34 @@ namespace Enemy
 
         private void OnDestroy()
         {
+            if (WaveController.Instance == null) return;
             switch (WaveType)
             {
                 case EnemyWaveType.Normal:
-                    WaveController.Instance.NormalEnemyDestroyed(this);
+                    WaveController.Instance.OnNormalEnemyDestroyed(this);
                     break;
                 case EnemyWaveType.Bonus:
-                    WaveController.Instance.BonusEnemyDestroyed(this);
+                    WaveController.Instance.OnBonusEnemyDestroyed(this);
                     break;
                 case EnemyWaveType.Boss:
-                    WaveController.Instance.BossEnemyDestroyed(this);
+                    WaveController.Instance.OnBossEnemyDestroyed(this);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void OnTriggerEnter2D(Collider2D col)
+        {
+            if (!WaveController.RunIsAlive) return;
+            if (col.gameObject.name.Trim() == "EndZone")
+            {
+                WaveController.Instance.OnEnemyHitsEndZone(this);
+            }
+            else if (col.GetComponent<EnemyScript>() == null)
+            {
+                Destroy(gameObject);
+                Destroy(col.gameObject);
             }
         }
 

@@ -13,6 +13,7 @@ namespace Enemy.Movement
         public float Width = 1f;
         public override void DoMovement(EnemyScript target)
         {
+            if (!WaveController.RunIsAlive) return;
             var sin = Mathf.Sin(target.LifeTime * SinewaveIntensity);
             sin = (target.WaveID % 2 == 0) ? sin : -sin;
 
