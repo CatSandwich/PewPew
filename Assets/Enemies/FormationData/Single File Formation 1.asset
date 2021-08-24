@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fcf850484731d14bb6712f4c1cdb3e1, type: 3}
+  m_Name: Single File Formation 1
+  m_EditorClassIdentifier: 
+  Movement: {fileID: 11400000, guid: 3fd91fc9f5a0ad54b8e18e11529be7ae, type: 2}
+  EnemyFormationWaveType: 0
+  Enemies:
+  - {fileID: 11400000, guid: c1743ac63e681d44c90fa6e81b91fe46, type: 2}
+  Speed: 1
+  Spacing: 0.5
+  DifficultyMin: 0
+  DifficultyMax: 1e+37
+  Count: 10
