@@ -3,3 +3,8 @@
 /Temp/*
 /obj/*
 **/*.suo
+.vsconfig
+*.csproj
+*.sln
+*.csproj.DotSettings
+.idea
