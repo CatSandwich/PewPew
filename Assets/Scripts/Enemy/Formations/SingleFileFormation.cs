@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Enemy.Data;
 using UnityEngine;
 
 namespace Enemy.Formations
@@ -9,7 +10,6 @@ namespace Enemy.Formations
     {
         public EnemyFormationWaveType EnemyFormationWaveType;
 
-        public override GenericEnemy[] GetEnemies() => Enemies;
         public GenericEnemy[] Enemies;
         public float Speed;
         public float Spacing;
@@ -40,18 +40,17 @@ namespace Enemy.Formations
             ResetFormation();
         }
 
+        public override float GetDifficultyMin() => DifficultyMin;
+        public override float GetDifficultyMax() => DifficultyMax;
+        public override GenericEnemy[] GetEnemies() => Enemies;
+        public override EnemyFormationType GetFormationType() => EnemyFormationType.SingleFile;
+        public override IEnumerable<EnemyFormationPlacement[]> GetNextEnemies() => _enemies.Select(enemy => new[] { new EnemyFormationPlacement(enemy, _spawnOffset) });
+        public override float GetSpacing() => Spacing;
+        public override float GetSpeed() => Speed;
+        public override EnemyFormationWaveType GetWaveType() => EnemyFormationWaveType;
         public override void ResetFormation()
         {
             _spawnOffset = new Vector2(Random.Range(WaveController.LeftBounds, WaveController.RightBounds), 0f);
         }
-
-        public override IEnumerable<EnemyFormationPlacement[]> GetNextEnemies() => _enemies.Select(enemy => new [] { new EnemyFormationPlacement(enemy,  _spawnOffset) });
-        public override EnemyFormationWaveType GetWaveType() => EnemyFormationWaveType;
-        public override EnemyFormationType GetFormationType() => EnemyFormationType.SingleFile;
-
-        public override float GetSpeed() => Speed;
-        public override float GetSpacing() => Spacing;
-        public override float GetDifficultyMin() => DifficultyMin;
-        public override float GetDifficultyMax() => DifficultyMax;
     }
 }

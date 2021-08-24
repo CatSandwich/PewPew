@@ -2,10 +2,10 @@ using UnityEngine;
 
 namespace Enemy.Movement
 {
-    public class GenericMovement : ScriptableObject
+    public abstract class GenericMovement : ScriptableObject
     {
-        public virtual float GetLeftBounds() => -50f;
-        public virtual float GetRightBounds() => 50f;
-        public virtual void DoMovement(EnemyScript target) { }
+        public abstract float GetLeftBounds();
+        public abstract float GetRightBounds();
+        public abstract void DoMovement(EnemyScript target);
     }
 }

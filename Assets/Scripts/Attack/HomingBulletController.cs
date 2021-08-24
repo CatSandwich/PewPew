@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Enemy;
 using UnityEngine;
 
@@ -8,7 +6,7 @@ namespace Attack
 {
     public class HomingBulletController : BulletController
     {
-        private Transform _target = null;
+        private Transform _target;
         public float Accuracy;
         
         public new static void Instantiate(Vector3 position, Vector2 direction)
@@ -20,7 +18,7 @@ namespace Attack
         
         private void _retarget()
         {
-            _target = WaveController.Instance.CurrentEnemies
+            _target = WaveController.Instance.GetCurrentEnemies()
                 .OrderBy(enemy => (transform.position - enemy.transform.position).magnitude)
                 .FirstOrDefault()?.transform;
         }
@@ -29,6 +27,8 @@ namespace Attack
         {
             base.Update();
             _retarget();
+            if (_target == null) return;
+
             var vector = _target.position - transform.position;
             var targetAngle = _radToDeg(Mathf.Atan2(vector.y, vector.x));
             transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(0, 0, targetAngle - 90), Accuracy);

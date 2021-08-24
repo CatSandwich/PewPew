@@ -7,5 +7,7 @@ namespace Enemy
     {
         public GameObject Prefab;
         public GameObject GetPrefab() => Prefab;
+
+        public int MaxHealth = 1;
     }
 }

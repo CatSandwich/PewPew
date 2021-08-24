@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Attack.Interfaces;
+using Enemy.Data;
 using Enemy.Movement;
 using UnityEngine;
 
@@ -15,7 +16,7 @@ namespace Enemy
 
         public event Action<EnemyScript> Destroyed = script => { };
         
-        public EnemyWaveType WaveType;
+        public EnemyFormationWaveType WaveType;
         public GenericMovement Movement;
         public float Speed;
         public Vector3 SpawnPoint;
@@ -25,7 +26,12 @@ namespace Enemy
         public int MovementPhase;
         public int AttackPhase;
 
-        private readonly List<int> _cooldowns = new List<int>();
+        public float MaxHealth;
+        public float Health;
+
+        public bool WasKilled;
+
+        private readonly List<int> _cooldownList = new List<int>();
         
         private void Start()
         {
@@ -42,14 +48,14 @@ namespace Enemy
             if (WaveController.Instance == null) return;
             switch (WaveType)
             {
-                case EnemyWaveType.Normal:
-                    WaveController.Instance.OnNormalEnemyDestroyed(this);
+                case EnemyFormationWaveType.Normal:
+                    WaveController.Instance.OnNormalEnemyDestroyed(this, WasKilled);
                     break;
-                case EnemyWaveType.Bonus:
-                    WaveController.Instance.OnBonusEnemyDestroyed(this);
+                case EnemyFormationWaveType.Bonus:
+                    WaveController.Instance.OnBonusEnemyDestroyed(this, WasKilled);
                     break;
-                case EnemyWaveType.Boss:
-                    WaveController.Instance.OnBossEnemyDestroyed(this);
+                case EnemyFormationWaveType.Boss:
+                    WaveController.Instance.OnBossEnemyDestroyed(this, WasKilled);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -74,32 +80,34 @@ namespace Enemy
                 }
                 case IOneHitAttack oneHit:
                 {
-                    Destroy(gameObject); // Remove when damage implemented
+                    TakeDamage(oneHit.Damage);
                     oneHit.Destroy();
                     break;
                 }
                 case ICooldownAttack cooldownAttack:
                 {
-                    if (_cooldowns.Contains(cooldownAttack.Id)) break;
-                    Destroy(gameObject); // Remove when damage implemented
+                    if (_cooldownList.Contains(cooldownAttack.Id)) break;
+                    TakeDamage(cooldownAttack.Damage);
                     StartCoroutine(_cooldown(cooldownAttack.Id, cooldownAttack.Cooldown));
                     break;
                 }
             }
         }
 
-        private IEnumerator _cooldown(int id, float cooldown)
+        public void TakeDamage(float damage)
         {
-            _cooldowns.Add(id);
-            yield return new WaitForSeconds(cooldown);
-            _cooldowns.Remove(id);
+            Health -= damage;
+            if (Health > 0) return;
+
+            WasKilled = true;
+            Destroy(gameObject);
         }
 
-        public enum EnemyWaveType
+        private IEnumerator _cooldown(int id, float cooldown)
         {
-            Normal,
-            Bonus,
-            Boss
+            _cooldownList.Add(id);
+            yield return new WaitForSeconds(cooldown);
+            _cooldownList.Remove(id);
         }
     }
 }

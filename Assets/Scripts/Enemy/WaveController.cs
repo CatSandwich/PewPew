@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Enemy.Formations;
 using UnityEngine;
 using UnityEngine.UI;
+using EnemyFormationPlacement = Enemy.Data.EnemyFormationPlacement;
+using EnemyFormationWaveType = Enemy.Data.EnemyFormationWaveType;
 
 namespace Enemy
 {
@@ -11,178 +13,134 @@ namespace Enemy
         public static WaveController Instance => _instance ??= FindObjectOfType<WaveController>();
         private static WaveController _instance;
 
-        public static float LeftBounds => Instance._leftBounds;
-        public static float RightBounds => Instance._rightBounds;
-        public static float TopBounds => Instance._topBounds;
-        public static bool RunIsAlive => Instance._runIsAlive;
+        /// <summary> Returns the left most X coordinate on screen allowed for unit placement. </summary>
+        public static float LeftBounds { get; private set; }
+        /// <summary> Returns the right most X coordinate on screen allowed for unit placement. </summary>
+        public static float RightBounds { get; private set; }
+        /// <summary> Returns the top most Y coordinate on screen allowed for unit pathing. </summary>
+        public static float TopBounds { get; private set; }
+        /// <summary> Returns true if the current run is still ongoing. </summary>
+        public static bool RunIsAlive { get; private set; }
 
-        private bool _runIsAlive;
-
+        #region Public Fields
         public Text DistanceDisplay;
+        /// <summary> Contains a list of all Formations which can be selected. </summary>
         public GenericFormation[] WaveList;
-        public List<EnemyScript> CurrentEnemies = new List<EnemyScript>();
+        /// <summary> Returns an IEnumerator of the current enemies when called. </summary>
+        public IEnumerable<EnemyScript> GetCurrentEnemies() => _currentEnemies;
+        #endregion
 
+        #region Private Fields
+        /// <summary> The current Formation being used to spawn units. </summary>
         private GenericFormation _currentFormation;
+        /// <summary> The earliest time at which the next unit may spawn, in Game Time. </summary>
         private float _nextSpawn;
-
-        private readonly System.Random Random = new System.Random();
-
-        private float _leftBounds;
-        private float _rightBounds;
-        private float _topBounds;
+        /// <summary> A Vector3 which describes the position of the bottom left most pixel in world coordinates. </summary>
         private Vector3 _bottomLeftBounds;
+        /// <summary> A Vector3 which describes the position of the top right most pixel in world coordinates. </summary>
         private Vector3 _topRightBounds;
 
+        /// <summary> An IEnumrator which contains the current list of units being spawned. </summary>
         private IEnumerator<EnemyFormationPlacement[]> _enemies;
+        /// <summary> The current wave number. </summary>
         private int _wave;
+        /// <summary> The last wave a Boss was spawned on. </summary>
         private int _lastBossWave;
+        /// <summary> True if the current wave is a Boss wave. </summary>
         private bool _isBossWaveActive;
-        private List<EnemyScript> _currentBosses = new List<EnemyScript>();
 
-        private float _distanceScore;
+        /// <summary> A list of all the currently alive Enemies. </summary>
+        private readonly List<EnemyScript> _currentEnemies = new List<EnemyScript>();
+        /// <summary> A List of all the currently alive Bosses. </summary>
+        private readonly List<EnemyScript> _currentBosses = new List<EnemyScript>();
 
+        private readonly System.Random Random = new System.Random();
+        #endregion
+
+        #region Public Methods
+        /// <summary> Called when an Enemy Collides with the EndZone. </summary>
         public void OnEnemyHitsEndZone(EnemyScript enemy)
         {
-            _runIsAlive = false;
+            RunIsAlive = false;
+            ScoreKeeper.FreezeRunScores();
         }
-
-        public void OnNormalEnemyDestroyed(EnemyScript enemy)
+        /// <summary> Called when a Normal type Enemy is destroyed. </summary>
+        public void OnNormalEnemyDestroyed(EnemyScript enemy, bool wasKilled)
         {
-            CurrentEnemies.Remove(enemy);
-            // A normal enemy has been defeated
+            _currentEnemies.Remove(enemy);
+            if (!wasKilled) return;
+            ScoreKeeper.AddScore(10f);
+            ScoreKeeper.AddKill(enemy.WaveType);
         }
-        public void OnBonusEnemyDestroyed(EnemyScript enemy)
+        /// <summary> Called when a Bonus type Enemy is destroyed. </summary>
+        public void OnBonusEnemyDestroyed(EnemyScript enemy, bool wasKilled)
         {
-            CurrentEnemies.Remove(enemy);
+            _currentEnemies.Remove(enemy);
+            if (!wasKilled) return;
+            ScoreKeeper.AddScore(10f);
+            ScoreKeeper.AddKill(enemy.WaveType);
         }
-        public void OnBossEnemyDestroyed(EnemyScript enemy)
+        /// <summary> Called when a Boss type Enemy is destroyed. </summary>
+        public void OnBossEnemyDestroyed(EnemyScript enemy, bool wasKilled)
         {
-            CurrentEnemies.Remove(enemy);
-            if (!_currentBosses.Contains(enemy)) return;
+            _currentEnemies.Remove(enemy);
             _currentBosses.Remove(enemy);
+            if (wasKilled)
+            {
+                ScoreKeeper.AddScore(100f);
+                ScoreKeeper.AddKill(enemy.WaveType);
+            }
 
-            // A boss has been defeated, add points
-
+            // If this was the last boss for the round, continue on
             if (!_isBossWaveActive) return;
             if (_currentBosses.Count > 0) return;
             _isBossWaveActive = false;
             _nextSpawn = Time.time + 5f;
         }
+        #endregion
 
+        #region Unity Methods
         private void Awake()
         {
             if (Instance != null && Instance != this)
                 Destroy(gameObject);
         }
-
         private void Start()
         {
-            _runIsAlive = true;
+            ScoreKeeper.ResetRunScores();
+            RunIsAlive = true;
             _nextSpawn = Time.time + 5f;
 
             _bottomLeftBounds = Camera.main.ScreenToWorldPoint(Vector3.zero);
             _topRightBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height));
 
-            _leftBounds = _bottomLeftBounds.x + 1f;
-            _rightBounds = _topRightBounds.x + -1f;
-            _topBounds = _topRightBounds.y - 1f;
+            LeftBounds = _bottomLeftBounds.x + 1f;
+            RightBounds = _topRightBounds.x + -1f;
+            TopBounds = _topRightBounds.y - 1f;
 
             if (WaveList.Length < 1)
                 Debug.LogError("WaveList not found! Was the WaveController deleted from the scene?");
         }
-
         private void Update()
         {
-            if (!_runIsAlive)
-            {
-                DistanceDisplay.text = $"Distance: {_distanceScore:N1}km\nWave: {_wave}\nBoss Wave: {_isBossWaveActive}\n" + (_isBossWaveActive ? $"Bosses Remaining: {_currentBosses.Count}\n" : "");
-                return;
-            }
+            DistanceDisplay.text = $"Distance: {ScoreKeeper.CurrentDistance:N1}km\nWave: {_wave}\nBoss Wave: {_isBossWaveActive}\n" + (_isBossWaveActive ? $"Bosses Remaining: {_currentBosses.Count}\n" : "" + $"\nScore: {ScoreKeeper.TotalScore}");
 
-            _distanceScore = Time.time;
-
-            DistanceDisplay.text = $"Distance: {_distanceScore:N1}km\nWave: {_wave}\nBoss Wave: {_isBossWaveActive}\n" + (_isBossWaveActive ? $"Bosses Remaining: {_currentBosses.Count}\n" : "");
+            if (!RunIsAlive) return;
 
             if (Time.time > _nextSpawn)
                 SpawnEnemy();
         }
+        #endregion
 
-        private void SpawnEnemy()
-        {
-            // If this is a boss wave, wait until the boss is dead
-            if (_isBossWaveActive)
-            {
-                _nextSpawn = Time.time + 5f;
-                return;
-            }
-
-            if (_currentFormation == null)
-                GetNextFormation();
-            
-            // If there are enemies to spawn, spawn them
-            if (_enemies.Current != null)
-            {
-                var waveID = 0;
-                // Spawn all the enemies in this row
-                foreach (var placement in _enemies.Current)
-                {
-                    var spawn = new Vector3(GetSpawnXClamped(placement), _topRightBounds.y + 1f + placement.Offset.y, 0f);
-
-                    var go = Instantiate(placement.Enemy.GetPrefab());
-                    go.transform.position = spawn;
-
-                    var enemy = go.GetComponent<EnemyScript>();
-                    enemy.SpawnPoint = spawn;
-                    enemy.Speed = _currentFormation.GetSpeed();
-                    enemy.Movement = _currentFormation.Movement;
-                    enemy.Wave = _wave;
-                    enemy.WaveID = waveID;
-
-                    CurrentEnemies.Add(enemy);
-                    switch (_currentFormation.GetWaveType())
-                    {
-                        case EnemyFormationWaveType.Undefined:
-                        case EnemyFormationWaveType.Normal:
-                            enemy.WaveType = EnemyScript.EnemyWaveType.Normal;
-                            break;
-                        case EnemyFormationWaveType.Bonus:
-                            enemy.WaveType = EnemyScript.EnemyWaveType.Bonus;
-                            break;
-                        case EnemyFormationWaveType.Boss:
-                            _currentBosses.Add(enemy);
-                            enemy.WaveType = EnemyScript.EnemyWaveType.Boss;
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-
-                    waveID++;
-                }
-            }
-
-            if (_currentFormation.GetWaveType() == EnemyFormationWaveType.Boss)
-            {
-                _isBossWaveActive = true;
-            }
-
-            // If this wave is over, cool off
-            if (!_enemies.MoveNext())
-            {
-                _currentFormation = null;
-                _nextSpawn = Time.time + 5f;
-                return;
-            }
-
-            _nextSpawn = Time.time + _currentFormation.GetSpacing();
-        }
-        
+        #region Private Methods
+        /// <summary> Selects the next Formation which will be sent. </summary>
         private void GetNextFormation()
         {
             var loopLimit = 0;
             while (_currentFormation == null)
             {
                 loopLimit++;
-                if (loopLimit > 500)
+                if (loopLimit > 100)
                 {
                     Debug.LogError("Unable to find a suitable wave!!");
                     _nextSpawn = Time.time + 10f;
@@ -210,6 +168,10 @@ namespace Enemy
             }
         }
 
+        /// <summary>
+        /// Clamps the X Placement range of the given <see cref="EnemyFormationPlacement"/> to on screen coordinates.
+        /// Has a special fallback for when the range of the placement cannot be forced entirely on screen.
+        /// </summary>
         private float GetSpawnXClamped(EnemyFormationPlacement placement)
         {
             // Check for out of bounds placement
@@ -222,5 +184,62 @@ namespace Enemy
                                 _currentFormation.Movement.GetLeftBounds(),
                                 _currentFormation.Movement.GetRightBounds());
         }
+
+        /// <summary> Spawns the next row of enemies. </summary>
+        private void SpawnEnemy()
+        {
+            // If this is a boss wave, wait until the boss is dead
+            if (_isBossWaveActive)
+            {
+                _nextSpawn = Time.time + 5f;
+                return;
+            }
+
+            if (_currentFormation == null)
+                GetNextFormation();
+
+            // If there are enemies to spawn, spawn them
+            if (_enemies.Current != null)
+            {
+                var waveID = 0;
+                // Spawn all the enemies in this row
+                foreach (var placement in _enemies.Current)
+                {
+                    // Pick a spawn point
+                    var spawn = new Vector3(GetSpawnXClamped(placement), _topRightBounds.y + 1f + placement.Offset.y, 0f);
+                    // Create a game object from a Prefab
+                    var go = Instantiate(placement.Enemy.GetPrefab());
+                    go.transform.position = spawn;
+                    // Attach the Enemy script and prepare it
+                    var enemy = go.GetComponent<EnemyScript>();
+                    enemy.SpawnPoint = spawn;
+                    enemy.Speed = _currentFormation.GetSpeed();
+                    enemy.Movement = _currentFormation.Movement;
+                    enemy.Wave = _wave;
+                    enemy.WaveID = waveID;
+                    enemy.Health = enemy.MaxHealth = placement.Enemy.MaxHealth;
+                    enemy.WaveType = _currentFormation.GetWaveType();
+
+                    _currentEnemies.Add(enemy);
+
+                    waveID++;
+                }
+            }
+
+            // If this is a boss wave, set the mode so no new mobs spawn during this wave
+            if (_currentFormation.GetWaveType() == EnemyFormationWaveType.Boss)
+                _isBossWaveActive = true;
+
+            // If this wave is over, cool off
+            if (!_enemies.MoveNext())
+            {
+                _currentFormation = null;
+                _nextSpawn = Time.time + 5f;
+                return;
+            }
+
+            _nextSpawn = Time.time + _currentFormation.GetSpacing();
+        }
+        #endregion
     }
 }
