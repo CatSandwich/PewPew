@@ -20,6 +20,7 @@ namespace Enemy
 
         public Text DistanceDisplay;
         public GenericFormation[] WaveList;
+        public List<EnemyScript> CurrentEnemies = new List<EnemyScript>();
 
         private GenericFormation _currentFormation;
         private float _nextSpawn;
@@ -47,14 +48,16 @@ namespace Enemy
 
         public void OnNormalEnemyDestroyed(EnemyScript enemy)
         {
+            CurrentEnemies.Remove(enemy);
             // A normal enemy has been defeated
         }
         public void OnBonusEnemyDestroyed(EnemyScript enemy)
         {
-            // A bonus enemy has been defeated
+            CurrentEnemies.Remove(enemy);
         }
         public void OnBossEnemyDestroyed(EnemyScript enemy)
         {
+            CurrentEnemies.Remove(enemy);
             if (!_currentBosses.Contains(enemy)) return;
             _currentBosses.Remove(enemy);
 
@@ -135,6 +138,7 @@ namespace Enemy
                     enemy.Wave = _wave;
                     enemy.WaveID = waveID;
 
+                    CurrentEnemies.Add(enemy);
                     switch (_currentFormation.GetWaveType())
                     {
                         case EnemyFormationWaveType.Undefined:

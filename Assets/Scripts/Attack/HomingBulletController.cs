@@ -1,11 +1,14 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using Enemy;
 using UnityEngine;
 
 namespace Attack
 {
     public class HomingBulletController : BulletController
     {
-        public Transform Target => Assets.Instance.Target.transform;
+        private Transform _target = null;
         public float Accuracy;
         
         public new static void Instantiate(Vector3 position, Vector2 direction)
@@ -14,13 +17,21 @@ namespace Attack
             go.transform.position = new Vector3(position.x, position.y, 0);
             go.transform.rotation = Quaternion.LookRotation(Vector3.forward, direction);
         }
-
+        
+        private void _retarget()
+        {
+            _target = WaveController.Instance.CurrentEnemies
+                .OrderBy(enemy => (transform.position - enemy.transform.position).magnitude)
+                .FirstOrDefault()?.transform;
+        }
+        
         public new void Update()
         {
             base.Update();
-            var vector = Target.position - transform.position;
+            _retarget();
+            var vector = _target.position - transform.position;
             var targetAngle = _radToDeg(Mathf.Atan2(vector.y, vector.x));
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(0, 0, targetAngle - 90), 2);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(0, 0, targetAngle - 90), Accuracy);
         }
 
         private static float _radToDeg(float radians) => radians * 180f / Mathf.PI;

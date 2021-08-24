@@ -4,9 +4,10 @@ using UnityEngine;
 
 namespace Enemy.Formations
 {
-    public class GenericFormation : ScriptableObject
+    public abstract class GenericFormation : ScriptableObject
     {
         public GenericMovement Movement;
+        public abstract GenericEnemy[] GetEnemies();
         public virtual void Initialize() { }
         public virtual void ResetFormation() { }
         public virtual IEnumerable<EnemyFormationPlacement[]> GetNextEnemies() { return null; }

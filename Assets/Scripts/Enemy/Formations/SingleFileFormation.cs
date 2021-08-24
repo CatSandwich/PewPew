@@ -9,6 +9,7 @@ namespace Enemy.Formations
     {
         public EnemyFormationWaveType EnemyFormationWaveType;
 
+        public override GenericEnemy[] GetEnemies() => Enemies;
         public GenericEnemy[] Enemies;
         public float Speed;
         public float Spacing;

@@ -13,6 +13,8 @@ namespace Enemy
         /// <summary> The number of seconds this Enemy has been alive, in game time. </summary>
         public float LifeTime => Time.time - SpawnTime;
 
+        public event Action<EnemyScript> Destroyed = script => { };
+        
         public EnemyWaveType WaveType;
         public GenericMovement Movement;
         public float Speed;
@@ -52,6 +54,7 @@ namespace Enemy
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            Destroyed(this);
         }
 
         private void OnTriggerEnter2D(Collider2D col)
