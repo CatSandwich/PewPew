@@ -1,15 +1,18 @@
+using Enemy.Movement;
+using Singletons;
 using UnityEngine;
 
-namespace Enemy.Movement
+namespace Enemy.Behaviours.Bosses
 {
     [CreateAssetMenu()]
-    public class BossMovement1 : GenericMovement
+    // ReSharper disable once UnusedMember.Global
+    public class BossBehaviour1 : AbstractBehaviour
     {
         public override float GetLeftBounds() => WaveController.LeftBounds;
         public override float GetRightBounds() => WaveController.RightBounds;
         public float GetTopBounds() => WaveController.TopBounds;
 
-        public override void DoMovement(EnemyScript target)
+        public override void DoBehaviour(EnemyScript target)
         {
             if (!WaveController.RunIsAlive) return;
 

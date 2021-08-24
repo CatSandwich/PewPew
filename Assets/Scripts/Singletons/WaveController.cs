@@ -1,12 +1,11 @@
-using System;
 using System.Collections.Generic;
+using Enemy;
+using Enemy.Data;
 using Enemy.Formations;
 using UnityEngine;
 using UnityEngine.UI;
-using EnemyFormationPlacement = Enemy.Data.EnemyFormationPlacement;
-using EnemyFormationWaveType = Enemy.Data.EnemyFormationWaveType;
 
-namespace Enemy
+namespace Singletons
 {
     public class WaveController : MonoBehaviour
     {
@@ -25,14 +24,14 @@ namespace Enemy
         #region Public Fields
         public Text DistanceDisplay;
         /// <summary> Contains a list of all Formations which can be selected. </summary>
-        public GenericFormation[] WaveList;
+        public AbstractFormation[] WaveList;
         /// <summary> Returns an IEnumerator of the current enemies when called. </summary>
         public IEnumerable<EnemyScript> GetCurrentEnemies() => _currentEnemies;
         #endregion
 
         #region Private Fields
         /// <summary> The current Formation being used to spawn units. </summary>
-        private GenericFormation _currentFormation;
+        private AbstractFormation _currentFormation;
         /// <summary> The earliest time at which the next unit may spawn, in Game Time. </summary>
         private float _nextSpawn;
         /// <summary> A Vector3 which describes the position of the bottom left most pixel in world coordinates. </summary>
@@ -40,7 +39,7 @@ namespace Enemy
         /// <summary> A Vector3 which describes the position of the top right most pixel in world coordinates. </summary>
         private Vector3 _topRightBounds;
 
-        /// <summary> An IEnumrator which contains the current list of units being spawned. </summary>
+        /// <summary> An IEnumerator which contains the current list of units being spawned. </summary>
         private IEnumerator<EnemyFormationPlacement[]> _enemies;
         /// <summary> The current wave number. </summary>
         private int _wave;
@@ -176,13 +175,13 @@ namespace Enemy
         {
             // Check for out of bounds placement
             // This can happen when the movement range is too wide and it's forced to go off screen
-            if (_currentFormation.Movement.GetLeftBounds() > 0) return 0;
-            if (_currentFormation.Movement.GetRightBounds() < 0) return 0;
+            if (_currentFormation.Behaviour.GetLeftBounds() > 0) return 0;
+            if (_currentFormation.Behaviour.GetRightBounds() < 0) return 0;
 
             // Fall back to clamping the movement range to be on screen
             return Mathf.Clamp( placement.Offset.x,
-                                _currentFormation.Movement.GetLeftBounds(),
-                                _currentFormation.Movement.GetRightBounds());
+                                _currentFormation.Behaviour.GetLeftBounds(),
+                                _currentFormation.Behaviour.GetRightBounds());
         }
 
         /// <summary> Spawns the next row of enemies. </summary>
@@ -214,7 +213,7 @@ namespace Enemy
                     var enemy = go.GetComponent<EnemyScript>();
                     enemy.SpawnPoint = spawn;
                     enemy.Speed = _currentFormation.GetSpeed();
-                    enemy.Movement = _currentFormation.Movement;
+                    enemy.Behaviour = _currentFormation.Behaviour;
                     enemy.Wave = _wave;
                     enemy.WaveID = waveID;
                     enemy.Health = enemy.MaxHealth = placement.Enemy.MaxHealth;

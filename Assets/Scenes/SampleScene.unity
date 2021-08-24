@@ -368,9 +368,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DistanceDisplay: {fileID: 2012489464}
   WaveList:
-  - {fileID: 11400000, guid: 98bed4bcabfd29e4b9f0c880c420dad3, type: 2}
-  - {fileID: 11400000, guid: 30cfaaac2eec2ce43905943ab259e04f, type: 2}
-  - {fileID: 11400000, guid: 073fd41ccf6982943800ee68ff12f094, type: 2}
   - {fileID: 11400000, guid: b834ac9aa3228c84b93a35bce7da9b32, type: 2}
 --- !u!4 &1102263362
 Transform:

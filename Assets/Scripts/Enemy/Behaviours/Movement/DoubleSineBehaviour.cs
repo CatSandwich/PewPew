@@ -1,9 +1,12 @@
+using Enemy.Movement;
+using Singletons;
 using UnityEngine;
 
-namespace Enemy.Movement
+namespace Enemy.Behaviours.Movement
 {
     [CreateAssetMenu()]
-    public class DoubleSineMovement : GenericMovement
+    // ReSharper disable once UnusedMember.Global
+    public class DoubleSineBehaviour : AbstractBehaviour
     {
         public override float GetLeftBounds() => 0f;
         public override float GetRightBounds() => 0f;
@@ -11,7 +14,7 @@ namespace Enemy.Movement
         public float SinewaveIntensity = 1f;
 
         public float Width = 1f;
-        public override void DoMovement(EnemyScript target)
+        public override void DoBehaviour(EnemyScript target)
         {
             if (!WaveController.RunIsAlive) return;
             var sin = Mathf.Sin(target.LifeTime * SinewaveIntensity);

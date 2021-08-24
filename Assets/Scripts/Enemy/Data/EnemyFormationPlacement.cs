@@ -4,16 +4,16 @@ namespace Enemy.Data
 {
     public struct EnemyFormationPlacement
     {
-        public readonly GenericEnemy Enemy;
+        public readonly EnemyBase Enemy;
         public readonly Vector2 Offset;
 
-        public EnemyFormationPlacement(GenericEnemy enemy) : this()
+        public EnemyFormationPlacement(EnemyBase enemy) : this()
         {
             Enemy = enemy;
             Offset = Vector2.zero;
         }
 
-        public EnemyFormationPlacement(GenericEnemy enemy, Vector2 offset)
+        public EnemyFormationPlacement(EnemyBase enemy, Vector2 offset)
         {
             Enemy = enemy;
             Offset = offset;

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a89bc16678184de47a20ff2f237db1c6, type: 3}
   m_Name: Double File Formation 2
   m_EditorClassIdentifier: 
-  Movement: {fileID: 11400000, guid: a03fe5585585c104998d76de04de469b, type: 2}
+  Behaviour: {fileID: 11400000, guid: a03fe5585585c104998d76de04de469b, type: 2}
   EnemyFormationWaveType: 0
   Enemies:
   - {fileID: 11400000, guid: c1743ac63e681d44c90fa6e81b91fe46, type: 2}

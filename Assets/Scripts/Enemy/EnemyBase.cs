@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Enemy
 {
     [CreateAssetMenu()]
-    public class GenericEnemy : ScriptableObject
+    public class EnemyBase : ScriptableObject
     {
         public GameObject Prefab;
         public GameObject GetPrefab() => Prefab;

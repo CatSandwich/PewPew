@@ -1,4 +1,5 @@
 using Attack.Interfaces;
+using Singletons;
 using UnityEngine;
 
 namespace Attack

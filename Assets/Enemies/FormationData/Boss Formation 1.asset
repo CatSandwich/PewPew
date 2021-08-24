@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fcf850484731d14bb6712f4c1cdb3e1, type: 3}
   m_Name: Boss Formation 1
   m_EditorClassIdentifier: 
-  Movement: {fileID: 11400000, guid: 6ccc6475209562a45b86d47ccee517a8, type: 2}
+  Behaviour: {fileID: 11400000, guid: 6ccc6475209562a45b86d47ccee517a8, type: 2}
   EnemyFormationWaveType: 2
   Enemies:
   - {fileID: 11400000, guid: a614cf7d1911dc54c8d8b5699c341a79, type: 2}

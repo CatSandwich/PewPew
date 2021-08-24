@@ -1,9 +1,12 @@
+using Enemy.Movement;
+using Singletons;
 using UnityEngine;
 
-namespace Enemy.Movement
+namespace Enemy.Behaviours.Movement
 {
     [CreateAssetMenu()]
-    public class SineMovement : GenericMovement
+    // ReSharper disable once UnusedMember.Global
+    public class SineBehaviour : AbstractBehaviour
     {
         public override float GetLeftBounds() => WaveController.LeftBounds + Width;
         public override float GetRightBounds() => WaveController.RightBounds - Width;
@@ -11,7 +14,7 @@ namespace Enemy.Movement
         public float SinewaveIntensity = 1f;
 
         public float Width = 1f;
-        public override void DoMovement(EnemyScript target)
+        public override void DoBehaviour(EnemyScript target)
         {
             if (!WaveController.RunIsAlive) return;
             target.gameObject.transform.Translate(target.Speed * Time.deltaTime * Vector3.down);

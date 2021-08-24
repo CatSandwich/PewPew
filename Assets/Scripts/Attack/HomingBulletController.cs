@@ -1,5 +1,6 @@
 using System.Linq;
 using Enemy;
+using Singletons;
 using UnityEngine;
 
 namespace Attack

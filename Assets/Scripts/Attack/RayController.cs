@@ -1,5 +1,6 @@
 using Attack.Interfaces;
 using Player;
+using Singletons;
 using UnityEngine;
 
 namespace Attack

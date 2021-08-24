@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: af23341fae330e441928205730e46138, type: 3}
-  m_Name: Boss Movement 1
+  m_Name: Boss Behaviour 1
   m_EditorClassIdentifier: 
   Phase: 0
