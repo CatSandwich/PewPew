@@ -1,10 +1,14 @@
 using System;
+using Attack.Interfaces;
 using UnityEngine;
 
 namespace Attack
 {
-    public class BulletController : MonoBehaviour
+    public class BulletController : MonoBehaviour, IOneHitAttack
     {
+        public float Damage => 5;
+        public void Destroy() => Destroy(gameObject);
+
         public float Speed;
 
         public static void Instantiate(Vector3 position, Vector2 direction)

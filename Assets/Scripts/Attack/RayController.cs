@@ -1,12 +1,16 @@
+using Attack.Interfaces;
 using Player;
 using UnityEngine;
 
 namespace Attack
 {
-    public class RayController : MonoBehaviour
+    public class RayController : MonoBehaviour, ICooldownAttack
     {
+        public float Damage => 5;
+        public float Cooldown => 1;
+        public int Id => GetInstanceID();
+        
         public float Lifetime;
-    
         private Transform _root;
         private float _startTime;
         private int _direction;
