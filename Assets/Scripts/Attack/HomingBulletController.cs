@@ -13,6 +13,7 @@ namespace Attack
         public new static void Instantiate(Vector3 position, Vector2 direction)
         {
             var go = Instantiate(Assets.Instance.HomingBullet);
+            go.transform.parent = Parent.transform;
             go.transform.position = new Vector3(position.x, position.y, 0);
             go.transform.rotation = Quaternion.LookRotation(Vector3.forward, direction);
         }

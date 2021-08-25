@@ -4,6 +4,7 @@ using Enemy.Data;
 using Enemy.Formations;
 using UnityEngine;
 using UnityEngine.UI;
+using HideFlags = UnityEngine.HideFlags;
 
 namespace Singletons
 {
@@ -54,47 +55,61 @@ namespace Singletons
         private readonly List<EnemyScript> _currentBosses = new List<EnemyScript>();
 
         private readonly System.Random Random = new System.Random();
+
+        private Pool<EnemyScript> EnemyPool;
+        private Dictionary<int, List<GameObject>> ModelPools = new Dictionary<int, List<GameObject>>();
+
         #endregion
 
         #region Public Methods
         /// <summary> Called when an Enemy Collides with the EndZone. </summary>
         public void OnEnemyHitsEndZone(EnemyScript enemy)
         {
+            if (!_currentEnemies.Contains(enemy)) return;
             RunIsAlive = false;
             ScoreKeeper.FreezeRunScores();
         }
         /// <summary> Called when a Normal type Enemy is destroyed. </summary>
         public void OnNormalEnemyDestroyed(EnemyScript enemy, bool wasKilled)
         {
-            _currentEnemies.Remove(enemy);
-            if (!wasKilled) return;
-            ScoreKeeper.AddScore(10f);
-            ScoreKeeper.AddKill(enemy.WaveType);
+            var waveType = enemy.WaveType;
+            if (!_removeEnemy(enemy, false)) return;
+            if (wasKilled) _increaseScoreFromKill(waveType, 10f);
         }
         /// <summary> Called when a Bonus type Enemy is destroyed. </summary>
         public void OnBonusEnemyDestroyed(EnemyScript enemy, bool wasKilled)
         {
-            _currentEnemies.Remove(enemy);
-            if (!wasKilled) return;
-            ScoreKeeper.AddScore(10f);
-            ScoreKeeper.AddKill(enemy.WaveType);
+            var waveType = enemy.WaveType;
+            if (!_removeEnemy(enemy, false)) return;
+            if (wasKilled) _increaseScoreFromKill(waveType, 50f);
         }
         /// <summary> Called when a Boss type Enemy is destroyed. </summary>
         public void OnBossEnemyDestroyed(EnemyScript enemy, bool wasKilled)
         {
-            _currentEnemies.Remove(enemy);
-            _currentBosses.Remove(enemy);
-            if (wasKilled)
-            {
-                ScoreKeeper.AddScore(100f);
-                ScoreKeeper.AddKill(enemy.WaveType);
-            }
+            var waveType = enemy.WaveType;
+            if (!_removeEnemy(enemy, false)) return;
+            if(wasKilled) _increaseScoreFromKill(waveType, 1000f);
 
             // If this was the last boss for the round, continue on
             if (!_isBossWaveActive) return;
             if (_currentBosses.Count > 0) return;
             _isBossWaveActive = false;
             _nextSpawn = Time.time + 5f;
+        }
+
+        private bool _removeEnemy(EnemyScript enemy, bool wasBoss)
+        {
+            if (!_currentEnemies.Contains(enemy)) return false;
+            if (wasBoss) _currentBosses.Remove(enemy);
+            _currentEnemies.Remove(enemy);
+            EnemyPool.Release(enemy);
+            return true;
+        }
+
+        private void _increaseScoreFromKill(EnemyFormationWaveType type, float score)
+        {
+            ScoreKeeper.AddKill(type);
+            ScoreKeeper.AddScore(100f);
         }
         #endregion
 
@@ -119,6 +134,8 @@ namespace Singletons
 
             if (WaveList.Length < 1)
                 Debug.LogError("WaveList not found! Was the WaveController deleted from the scene?");
+
+            EnemyPool = PoolManager.CreatePool(CreateEnemy, ActivateEnemy, DeactivateEnemy);
         }
         private void Update()
         {
@@ -204,23 +221,28 @@ namespace Singletons
                 // Spawn all the enemies in this row
                 foreach (var placement in _enemies.Current)
                 {
-                    // Pick a spawn point
                     var spawn = new Vector3(GetSpawnXClamped(placement), _topRightBounds.y + 1f + placement.Offset.y, 0f);
-                    // Create a game object from a Prefab
-                    var go = Instantiate(placement.Enemy.GetPrefab());
-                    go.transform.position = spawn;
-                    // Attach the Enemy script and prepare it
-                    var enemy = go.GetComponent<EnemyScript>();
+                    var enemy = EnemyPool.Get();
+                    var model = GetModel(placement.Enemy.Prefab);
+                    enemy.gameObject.transform.position = spawn;
+                    model.transform.parent = enemy.gameObject.transform;
+                    model.transform.localPosition = Vector3.zero;
+
+                    model.GetComponent<ChildCollisionHandler>().Parent = enemy;
+                    
+                    enemy.Model = model;
+                    enemy.ModelId = placement.Enemy.Prefab.GetInstanceID();
+
                     enemy.SpawnPoint = spawn;
                     enemy.Speed = _currentFormation.GetSpeed();
                     enemy.Behaviour = _currentFormation.Behaviour;
                     enemy.Wave = _wave;
-                    enemy.WaveID = waveID;
+                    enemy.WaveId = waveID;
                     enemy.Health = enemy.MaxHealth = placement.Enemy.MaxHealth;
                     enemy.WaveType = _currentFormation.GetWaveType();
 
                     _currentEnemies.Add(enemy);
-
+                    
                     waveID++;
                 }
             }
@@ -238,6 +260,53 @@ namespace Singletons
             }
 
             _nextSpawn = Time.time + _currentFormation.GetSpacing();
+        }
+
+        private EnemyScript CreateEnemy()
+        {
+            var go = new GameObject("Enemy");
+            go.SetActive(false);
+            go.hideFlags = HideFlags.HideInHierarchy;
+            go.transform.parent = gameObject.transform;
+            var script = go.AddComponent<EnemyScript>();
+
+            return script;
+        }
+        private void ActivateEnemy(EnemyScript item)
+        {
+            item.gameObject.SetActive(true);
+            item.gameObject.hideFlags = HideFlags.None;
+        }
+        private void DeactivateEnemy(EnemyScript item)
+        {
+            ReleaseModel(item.ModelId, item.Model);
+            item.Model = null;
+            item.ModelId = 0;
+            item.gameObject.SetActive(false);
+            item.gameObject.hideFlags = HideFlags.HideInHierarchy;
+        }
+
+        private GameObject GetModel(GameObject prefab)
+        {
+            var key = prefab.GetInstanceID();
+            if (!ModelPools.ContainsKey(key)) return Instantiate(prefab);
+            if (ModelPools[key].Count <= 0) return Instantiate(prefab);
+
+            var model = ModelPools[key][0];
+            ModelPools[key].Remove(model);
+
+            model.SetActive(true);
+            model.hideFlags = HideFlags.None;
+            return model;
+        }
+
+        private void ReleaseModel(int key, GameObject model)
+        {
+            model.SetActive(false);
+            model.hideFlags = HideFlags.HideInHierarchy;
+            model.transform.parent = gameObject.transform;
+            if (!ModelPools.ContainsKey(key)) ModelPools.Add(key, new List<GameObject>());
+            ModelPools[key].Add(model);
         }
         #endregion
     }

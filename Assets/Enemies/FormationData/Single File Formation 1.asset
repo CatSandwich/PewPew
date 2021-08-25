@@ -16,6 +16,8 @@ MonoBehaviour:
   EnemyFormationWaveType: 0
   Enemies:
   - {fileID: 11400000, guid: c1743ac63e681d44c90fa6e81b91fe46, type: 2}
+  - {fileID: 11400000, guid: c1743ac63e681d44c90fa6e81b91fe46, type: 2}
+  - {fileID: 11400000, guid: c2cdeb0e9c0f43e4bb858cad8c0694c8, type: 2}
   Speed: 1
   Spacing: 0.5
   DifficultyMin: 0

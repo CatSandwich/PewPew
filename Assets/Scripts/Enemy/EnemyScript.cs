@@ -9,11 +9,14 @@ using UnityEngine;
 
 namespace Enemy
 {
-    public class EnemyScript : MonoBehaviour
+    public class EnemyScript : MonoBehaviour, IPoolable, IChildCollisionHandler
     {
 
         /// <summary> The number of seconds this Enemy has been alive, in game time. </summary>
         public float LifeTime => Time.time - SpawnTime;
+
+        public int ModelId;
+        public GameObject Model;
 
         /// <summary> Called when this Unit is Destroyed by any means. </summary>
         public event Action<EnemyScript> Destroyed = script => { };
@@ -36,7 +39,7 @@ namespace Enemy
         /// <summary> The Wave in which this Unit spawned. </summary>
         public int Wave;
         /// <summary> The Unique ID in the Wave in which this Unit spawned. </summary>
-        public int WaveID;
+        public int WaveId;
         /// <summary> The current Movement Phase of this Unit. This is not used by all Behaviours. </summary>
         public int MovementPhase;
         /// <summary> The current Action Phase of this Unit. This is not used by all Behaviours. </summary>
@@ -69,9 +72,17 @@ namespace Enemy
             Behaviour.DoBehaviour(this);
         }
 
-        private void OnDestroy()
+        /// <summary>
+        /// Causes this Unit to take damage, potentially killing it.
+        /// </summary>
+        public void TakeDamage(float damage, bool sourceIsPlayer = true)
         {
-            if (WaveController.Instance == null) return;
+            if (!WaveController.RunIsAlive) return;
+            Health -= damage;
+            if (Health > 0) return;
+
+            WasKilled = sourceIsPlayer;
+            
             switch (WaveType)
             {
                 case EnemyFormationWaveType.Normal:
@@ -89,20 +100,21 @@ namespace Enemy
             Destroyed(this);
         }
 
-        private void OnTriggerEnter2D(Collider2D col)
+        private IEnumerator _cooldown(int id, float cooldown)
+        {
+            _cooldownList.Add(id);
+            yield return new WaitForSeconds(cooldown);
+            _cooldownList.Remove(id);
+        }
+        public void OnChildTriggerEnter2D(Collider2D col)
         {
             if (!WaveController.RunIsAlive) return;
             if (col.gameObject.name.Trim() == "EndZone")
             {
-
-#if UNITY_EDITOR
-                Destroy(gameObject);
-#else
                 WaveController.Instance.OnEnemyHitsEndZone(this);
-#endif
                 return;
             }
-            
+
             switch (col.GetComponent<IAttack>())
             {
                 case null:
@@ -119,30 +131,22 @@ namespace Enemy
                 {
                     if (_cooldownList.Contains(cooldownAttack.Id)) break;
                     TakeDamage(cooldownAttack.Damage);
-                    StartCoroutine(_cooldown(cooldownAttack.Id, cooldownAttack.Cooldown));
+                    if (Health > 0 && gameObject.activeInHierarchy) StartCoroutine(_cooldown(cooldownAttack.Id, cooldownAttack.Cooldown));
                     break;
                 }
             }
         }
 
-        /// <summary>
-        /// Causes this Unit to take damage, potentially killing it.
-        /// </summary>
-        public void TakeDamage(float damage)
+        public void OnActivate()
         {
-            if (!WaveController.RunIsAlive) return;
-            Health -= damage;
-            if (Health > 0) return;
-
-            WasKilled = true;
-            Destroy(gameObject);
         }
 
-        private IEnumerator _cooldown(int id, float cooldown)
+        public void OnDeactivate()
         {
-            _cooldownList.Add(id);
-            yield return new WaitForSeconds(cooldown);
-            _cooldownList.Remove(id);
+        }
+
+        public void OnReset()
+        {
         }
     }
 }
