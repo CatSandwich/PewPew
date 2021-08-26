@@ -372,6 +372,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 30cfaaac2eec2ce43905943ab259e04f, type: 2}
   - {fileID: 11400000, guid: 073fd41ccf6982943800ee68ff12f094, type: 2}
   - {fileID: 11400000, guid: b834ac9aa3228c84b93a35bce7da9b32, type: 2}
+  CurrentEnemies: []
 --- !u!4 &1102263362
 Transform:
   m_ObjectHideFlags: 0
@@ -869,7 +870,7 @@ MonoBehaviour:
   Bullet: {fileID: 7448578027169127309, guid: 64e9e8433d83b494aa389fa4f8816d0c, type: 3}
   HomingBullet: {fileID: 7448578027169127309, guid: c7c48525522ccf448bfc4b97d6d028f1, type: 3}
   Ray: {fileID: 7395811369145963426, guid: 6d379dba55e2f394c8b96f8ed20f8b2f, type: 3}
-  Target: {fileID: 1106363808}
+  ElectricField: {fileID: 7395811369145963426, guid: 0fe0b8f5d2b3c3b459ed7eab9540c109, type: 3}
 --- !u!4 &2128778792
 Transform:
   m_ObjectHideFlags: 0

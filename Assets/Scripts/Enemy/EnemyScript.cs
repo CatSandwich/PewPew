@@ -24,8 +24,6 @@ namespace Enemy
         public int WaveID;
         public int MovementPhase;
         public int AttackPhase;
-
-        private readonly List<int> _cooldowns = new List<int>();
         
         private void Start()
         {
@@ -65,34 +63,13 @@ namespace Enemy
                 WaveController.Instance.OnEnemyHitsEndZone(this);
                 return;
             }
-            
-            switch (col.GetComponent<IAttack>())
-            {
-                case null:
-                {
-                    break;
-                }
-                case IOneHitAttack oneHit:
-                {
-                    Destroy(gameObject); // Remove when damage implemented
-                    oneHit.Destroy();
-                    break;
-                }
-                case ICooldownAttack cooldownAttack:
-                {
-                    if (_cooldowns.Contains(cooldownAttack.Id)) break;
-                    Destroy(gameObject); // Remove when damage implemented
-                    StartCoroutine(_cooldown(cooldownAttack.Id, cooldownAttack.Cooldown));
-                    break;
-                }
-            }
-        }
 
-        private IEnumerator _cooldown(int id, float cooldown)
-        {
-            _cooldowns.Add(id);
-            yield return new WaitForSeconds(cooldown);
-            _cooldowns.Remove(id);
+            var attack = col.GetComponent<IAttack>();
+            if (attack != null && attack.ValidateHit(this))
+            {
+                Destroy(gameObject); // Take damage
+                attack.OnHit(this);
+            }
         }
 
         public enum EnemyWaveType
