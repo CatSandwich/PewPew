@@ -7,9 +7,7 @@ namespace Attack
 {
     public class HomingBulletController : Bullet
     {
-        public override float Damage => Upgrades.HomingBulletDamage;
-        protected override float Speed => Upgrades.HomingBulletSpeed;
-        private static float Accuracy => Upgrades.HomingBulletAccuracy;
+        private static float Accuracy => Manager.HomingMissileAccuracy.Value;
         private Transform _target;
         
         public new static void Instantiate(Vector3 position, Vector3 direction)
