@@ -5,13 +5,12 @@ using UnityEngine;
 
 namespace Attack
 {
-    public class RayController : MonoBehaviour, ICooldownAttack
+    public class RayController : CooldownAttackBase
     {
-        public float Damage => 5;
-        public float Cooldown => 1;
-        public int Id => GetInstanceID();
-        
-        public float Lifetime;
+        public override float Damage => 5;
+        protected override float Cooldown => 1;
+        protected override float Lifetime => 8f;
+
         private Transform _root;
         private float _startTime;
         private int _direction;

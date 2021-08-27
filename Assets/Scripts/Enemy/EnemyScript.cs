@@ -6,6 +6,7 @@ using Enemy.Data;
 using Enemy.Movement;
 using Singletons;
 using UnityEngine;
+using Singletons;
 
 namespace Enemy
 {
@@ -114,26 +115,12 @@ namespace Enemy
                 WaveController.Instance.OnEnemyHitsEndZone(this);
                 return;
             }
-
-            switch (col.GetComponent<IAttack>())
+            
+            var attack = col.GetComponent<IAttack>();
+            if (attack != null && attack.ValidateHit(this))
             {
-                case null:
-                {
-                    break;
-                }
-                case IOneHitAttack oneHit:
-                {
-                    TakeDamage(oneHit.Damage);
-                    oneHit.Destroy();
-                    break;
-                }
-                case ICooldownAttack cooldownAttack:
-                {
-                    if (_cooldownList.Contains(cooldownAttack.Id)) break;
-                    TakeDamage(cooldownAttack.Damage);
-                    if (Health > 0 && gameObject.activeInHierarchy) StartCoroutine(_cooldown(cooldownAttack.Id, cooldownAttack.Cooldown));
-                    break;
-                }
+                Destroy(gameObject); // Take damage
+                attack.OnHit(this);
             }
         }
 

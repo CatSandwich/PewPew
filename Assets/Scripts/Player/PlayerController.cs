@@ -8,8 +8,8 @@ namespace Player
         public static PlayerController Instance;
         
         public PlayerUpgrades Upgrades;
-        private readonly Vector3 UpRight = new Vector3(1f, 1f, 0f).normalized;
-        private readonly Vector3 UpLeft = new Vector3(-1f, 1f, 0f).normalized;
+        private readonly Vector3 UpRight = new Vector3(0f, 0f, 45f);
+        private readonly Vector3 UpLeft = new Vector3(0f, 0f, -45f);
 
         private float _percentToShot = 0f;
         
@@ -45,6 +45,8 @@ namespace Player
                 Upgrades.TripleShot = !Upgrades.TripleShot;
             if (Input.GetKeyDown(KeyCode.H))
                 Upgrades.HomingMissiles = !Upgrades.HomingMissiles;
+            if (Input.GetKeyDown(KeyCode.E))
+                Upgrades.ElectricField = !Upgrades.ElectricField;
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 RayController.Instantiate(1);
@@ -56,18 +58,23 @@ namespace Player
         private void _shoot()
         {
             var position = transform.position;
-            BulletController.Instantiate(position, Vector3.up);
+            Bullet.Instantiate(position, Vector3.up);
             
             if (Upgrades.TripleShot)
             {
-                BulletController.Instantiate(position, UpRight);
-                BulletController.Instantiate(position, UpLeft);
+                Bullet.Instantiate(position, UpRight);
+                Bullet.Instantiate(position, UpLeft);
             }
 
             if (Upgrades.HomingMissiles)
             {
                 HomingBulletController.Instantiate(position, UpRight);
                 HomingBulletController.Instantiate(position, UpLeft);
+            }
+
+            if (Upgrades.ElectricField)
+            {
+                ElectricFieldController.Instantiate(position);
             }
         }
     }

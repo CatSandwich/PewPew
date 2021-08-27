@@ -2,20 +2,23 @@ using System.Linq;
 using Enemy;
 using Singletons;
 using UnityEngine;
+using Singletons;
 
 namespace Attack
 {
-    public class HomingBulletController : BulletController
+    public class HomingBulletController : Bullet
     {
+        public override float Damage => Upgrades.HomingBulletDamage;
+        protected override float Speed => Upgrades.HomingBulletSpeed;
+        private static float Accuracy => Upgrades.HomingBulletAccuracy;
         private Transform _target;
-        public float Accuracy;
         
-        public new static void Instantiate(Vector3 position, Vector2 direction)
+        public new static void Instantiate(Vector3 position, Vector3 direction)
         {
-            var go = Instantiate(Assets.Instance.HomingBullet);
+            var go = Object.Instantiate(Assets.Instance.HomingBullet);
             go.transform.parent = Parent.transform;
             go.transform.position = new Vector3(position.x, position.y, 0);
-            go.transform.rotation = Quaternion.LookRotation(Vector3.forward, direction);
+            go.transform.rotation = Quaternion.Euler(direction);
         }
         
         private void _retarget()
@@ -29,8 +32,7 @@ namespace Attack
         {
             base.Update();
             _retarget();
-            if (_target == null) return;
-
+            if (!_target) return;
             var vector = _target.position - transform.position;
             var targetAngle = _radToDeg(Mathf.Atan2(vector.y, vector.x));
             transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(0, 0, targetAngle - 90), Accuracy);
