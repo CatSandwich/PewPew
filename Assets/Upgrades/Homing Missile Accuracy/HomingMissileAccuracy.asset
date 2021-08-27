@@ -16,3 +16,5 @@ MonoBehaviour:
   Key: missile_accuracy
   Tiers:
   - {fileID: 11400000, guid: 991156fd70ddc13449af6b2f4f5e51a0, type: 2}
+  - {fileID: 11400000, guid: 5d2fa78d60a8a814b8a6e0ac869e9690, type: 2}
+  - {fileID: 11400000, guid: ac1682bfdc8ee3f4284db845937bef39, type: 2}

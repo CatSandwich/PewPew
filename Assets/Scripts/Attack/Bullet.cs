@@ -13,7 +13,7 @@ namespace Attack
 
         public static void Instantiate(Vector3 position, Vector3 rotation)
         {
-            var go = Instantiate(Assets.Instance.Bullet);
+            var go = Instantiate(Assets.Instance.Bullet, Parent.transform, true);
             go.transform.position = position;
             go.transform.rotation = Quaternion.Euler(rotation);
         }
