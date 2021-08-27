@@ -6,9 +6,9 @@ namespace Attack
 {
     public class Bullet : AttackBase
     {
-        public override float Damage => Upgrades.BaseBulletDamage;
-        protected virtual float Speed => Upgrades.BaseBulletSpeed;
-        private int StartingPierce => Upgrades.BulletPierce;
+        public override float Damage => Manager.BulletDamage.Value;
+        protected virtual float Speed => Manager.BulletSpeed.Value;
+        private int StartingPierce => Manager.BulletPierce.Value;
         private int _pierce;
 
         public static void Instantiate(Vector3 position, Vector3 rotation)

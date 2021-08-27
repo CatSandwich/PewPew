@@ -1,6 +1,7 @@
 ﻿using Attack.Interfaces;
 using Enemy;
 using Player;
+using Singletons;
 using UnityEngine;
 
 namespace Attack
@@ -9,7 +10,7 @@ namespace Attack
     {        
         protected static GameObject Parent => _parent ??= new GameObject("Bullet Parent");
         private static GameObject _parent;
-        protected static PlayerUpgrades Upgrades => PlayerController.Instance.Upgrades;
+        protected static GameManager Manager => GameManager.Instance;
         public abstract float Damage { get; }
         public virtual bool ValidateHit(EnemyScript enemy) => true;
         public abstract void OnHit(EnemyScript enemy);

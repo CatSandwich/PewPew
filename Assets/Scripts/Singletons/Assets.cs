@@ -10,7 +10,7 @@ namespace Singletons
         public GameObject Ray;
         public GameObject ElectricField;
     
-        void Start()
+        private void Start()
         {
             if (Instance != null)
             {

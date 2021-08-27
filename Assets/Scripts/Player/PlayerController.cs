@@ -1,4 +1,5 @@
 using Attack;
+using Singletons;
 using UnityEngine;
 
 namespace Player
@@ -7,7 +8,7 @@ namespace Player
     {
         public static PlayerController Instance;
         
-        public PlayerUpgrades Upgrades;
+        public GameManager Manager => GameManager.Instance;
         private readonly Vector3 UpRight = new Vector3(0f, 0f, 45f);
         private readonly Vector3 UpLeft = new Vector3(0f, 0f, -45f);
 
@@ -23,7 +24,6 @@ namespace Player
             }
 
             Instance = this;
-            Upgrades = PlayerUpgrades.Load();
         }
 
         // Update is called once per frame
@@ -33,7 +33,7 @@ namespace Player
             var x = Camera.main.ScreenToWorldPoint(Vector3.right * mouseX).x;
             transform.position = new Vector3(x, 0, 0);
 
-            _percentToShot += Upgrades.AttackSpeed * Time.deltaTime;
+            _percentToShot += Time.deltaTime;
             if (_percentToShot >= 1f)
             {
                 _percentToShot -= 1f;
@@ -42,11 +42,11 @@ namespace Player
 
             #if UNITY_EDITOR
             if (Input.GetKeyDown(KeyCode.T))
-                Upgrades.TripleShot = !Upgrades.TripleShot;
+                Manager.Multishot.Debug();
+            if (Input.GetKeyDown(KeyCode.P))
+                Manager.BulletPierce.Debug();
             if (Input.GetKeyDown(KeyCode.H))
-                Upgrades.HomingMissiles = !Upgrades.HomingMissiles;
-            if (Input.GetKeyDown(KeyCode.E))
-                Upgrades.ElectricField = !Upgrades.ElectricField;
+                Manager.HomingMissiles.Debug();
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 RayController.Instantiate(1);
@@ -60,21 +60,16 @@ namespace Player
             var position = transform.position;
             Bullet.Instantiate(position, Vector3.up);
             
-            if (Upgrades.TripleShot)
+            if (Manager.Multishot.Value > 1)
             {
                 Bullet.Instantiate(position, UpRight);
                 Bullet.Instantiate(position, UpLeft);
             }
 
-            if (Upgrades.HomingMissiles)
+            if (Manager.HomingMissiles.Value > 0)
             {
                 HomingBulletController.Instantiate(position, UpRight);
                 HomingBulletController.Instantiate(position, UpLeft);
-            }
-
-            if (Upgrades.ElectricField)
-            {
-                ElectricFieldController.Instantiate(position);
             }
         }
     }

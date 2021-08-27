@@ -10,8 +10,8 @@ namespace Attack
 {
     public class ElectricFieldController : CooldownAttackBase
     {
-        protected override float Lifetime => Upgrades.ElectricFieldLifetime;
-        private static float Speed => Upgrades.ElectricFieldMoveSpeed;
+        protected override float Lifetime => 8; //Manager.ElectricFieldLifetime;
+        private static float Speed => 5; //Manager.ElectricFieldMoveSpeed;
         
         public override float Damage => 5;
         protected override float Cooldown => 0.5f;
