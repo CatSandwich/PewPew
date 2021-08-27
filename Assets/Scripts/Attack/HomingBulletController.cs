@@ -2,7 +2,6 @@ using System.Linq;
 using Enemy;
 using Singletons;
 using UnityEngine;
-using Singletons;
 
 namespace Attack
 {
@@ -15,8 +14,7 @@ namespace Attack
         
         public new static void Instantiate(Vector3 position, Vector3 direction)
         {
-            var go = Object.Instantiate(Assets.Instance.HomingBullet);
-            go.transform.parent = Parent.transform;
+            var go = Object.Instantiate(Assets.Instance.HomingBullet, Parent.transform, true);
             go.transform.position = new Vector3(position.x, position.y, 0);
             go.transform.rotation = Quaternion.Euler(direction);
         }

@@ -8,7 +8,8 @@ namespace Singletons
         public GameObject Bullet;
         public GameObject HomingBullet;
         public GameObject Ray;
-        public GameObject Target;
+        public GameObject ElectricField;
+    
         void Start()
         {
             if (Instance != null)

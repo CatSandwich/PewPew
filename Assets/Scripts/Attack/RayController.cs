@@ -18,7 +18,7 @@ namespace Attack
         public static void Instantiate(int direction)
         {
             var go = Instantiate(Assets.Instance.Ray);
-            go.transform.parent = BulletController.Parent.transform;
+            go.transform.parent = Parent.transform;
             var controller = go.GetComponent<RayController>();
             controller._direction = direction;
             controller._root = PlayerController.Instance.transform;

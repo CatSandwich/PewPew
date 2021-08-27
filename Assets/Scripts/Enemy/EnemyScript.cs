@@ -6,7 +6,6 @@ using Enemy.Data;
 using Enemy.Movement;
 using Singletons;
 using UnityEngine;
-using Singletons;
 
 namespace Enemy
 {
@@ -119,7 +118,7 @@ namespace Enemy
             var attack = col.GetComponent<IAttack>();
             if (attack != null && attack.ValidateHit(this))
             {
-                Destroy(gameObject); // Take damage
+                TakeDamage(attack.Damage);
                 attack.OnHit(this);
             }
         }

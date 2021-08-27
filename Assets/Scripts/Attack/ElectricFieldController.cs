@@ -4,6 +4,7 @@ using Attack.Interfaces;
 using Enemy;
 using Player;
 using UnityEngine;
+using Singletons;
 
 namespace Attack
 {
@@ -32,7 +33,7 @@ namespace Attack
         
         private void _retarget()
         {
-            _target = WaveController.Instance.CurrentEnemies
+            _target = WaveController.Instance.GetCurrentEnemies()
                 .OrderBy(enemy => (transform.position - enemy.transform.position).magnitude)
                 .FirstOrDefault()?.transform;
         }
