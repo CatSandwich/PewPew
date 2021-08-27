@@ -13,6 +13,7 @@ namespace Singletons
         public Upgrade<float> BulletDamage;
         public Upgrade<float> BulletSpeed;
         public Upgrade<int> BulletPierce;
+        public Upgrade<float> BulletRate;
         public Upgrade<int> HomingMissiles;
         public Upgrade<float> HomingMissileAccuracy;
         public IEnumerable<Upgrade> Upgrades => new List<Upgrade>
@@ -21,6 +22,7 @@ namespace Singletons
             BulletDamage,
             BulletSpeed,
             BulletPierce,
+            BulletRate,
             HomingMissiles,
             HomingMissileAccuracy
         };

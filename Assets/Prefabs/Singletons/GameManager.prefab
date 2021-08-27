@@ -47,5 +47,6 @@ MonoBehaviour:
   BulletDamage: {fileID: 11400000, guid: 3c661e1b30a44424f9c6fc88147ab38a, type: 2}
   BulletSpeed: {fileID: 11400000, guid: bcd1baca793597241bcc6f2f71f270fb, type: 2}
   BulletPierce: {fileID: 11400000, guid: 729a9116d52d5e74d952fe4af44b58dc, type: 2}
+  BulletRate: {fileID: 11400000, guid: 0f6e712a6eb10f7498dafb7656bbd29b, type: 2}
   HomingMissiles: {fileID: 11400000, guid: 8d977d0f0d7fe6b4b905e6bc0937a75a, type: 2}
   HomingMissileAccuracy: {fileID: 11400000, guid: db2145f93041c4e4cb9813cde228e540, type: 2}

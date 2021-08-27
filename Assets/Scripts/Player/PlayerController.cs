@@ -33,7 +33,7 @@ namespace Player
             var x = Camera.main.ScreenToWorldPoint(Vector3.right * mouseX).x;
             transform.position = new Vector3(x, 0, 0);
 
-            _percentToShot += Time.deltaTime;
+            _percentToShot += Time.deltaTime * Manager.BulletRate.Value;
             if (_percentToShot >= 1f)
             {
                 _percentToShot -= 1f;
