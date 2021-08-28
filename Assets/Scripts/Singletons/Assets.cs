@@ -18,6 +18,7 @@ namespace Singletons
                 return;
             }
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
     }
 }

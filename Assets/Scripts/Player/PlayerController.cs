@@ -1,6 +1,8 @@
+using System;
 using Attack;
 using Singletons;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Player
 {
@@ -12,9 +14,9 @@ namespace Player
         private readonly Vector3 UpRight = new Vector3(0f, 0f, 45f);
         private readonly Vector3 UpLeft = new Vector3(0f, 0f, -45f);
 
-        private float _percentToShot = 0f;
-        private float _percentToField = 0f;
-        private float _percentToRay = 0f;
+        [NonSerialized] public float PercentToShot = 0f;
+        [NonSerialized] public float PercentToField = 0f;
+        [NonSerialized] public float PercentToRay = 0f;
         
         // Singleton
         void Start()
@@ -35,15 +37,15 @@ namespace Player
             var x = Camera.main.ScreenToWorldPoint(Vector3.right * mouseX).x;
             transform.position = new Vector3(x, 0, 0);
 
-            _percentToShot += Time.deltaTime * Manager.BulletRate.Value;
-            if (TrySubtract(ref _percentToShot, 1f)) _shoot();
+            PercentToShot += Time.deltaTime * Manager.BulletRate.Value;
+            if (TrySubtract(ref PercentToShot, 1f)) _shoot();
             
-            _percentToField += Time.deltaTime * Manager.ElectricFieldRate.Value;
-            if (TrySubtract(ref _percentToField, 1f)) _shootField();
+            PercentToField += Time.deltaTime * Manager.ElectricFieldRate.Value;
+            if (TrySubtract(ref PercentToField, 1f)) _shootField();
             
-            _percentToRay += Time.deltaTime * Manager.BulletRate.Value;
-            _percentToRay = Mathf.Clamp(_percentToRay, 0f, 1f);
-            if (Input.GetKeyDown(KeyCode.Space) && TrySubtract(ref _percentToRay, 1f))
+            PercentToRay += Time.deltaTime * Manager.RayCooldown.Value;
+            PercentToRay = Mathf.Clamp(PercentToRay, 0f, 1f);
+            if (Input.GetKeyDown(KeyCode.Space) && TrySubtract(ref PercentToRay, 1f))
             {
                 RayController.Instantiate(1);
                 RayController.Instantiate(-1);
