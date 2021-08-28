@@ -1023,6 +1023,7 @@ GameObject:
   - component: {fileID: 1211629821}
   - component: {fileID: 1211629820}
   - component: {fileID: 1211629819}
+  - component: {fileID: 1211629822}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1107,6 +1108,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &1211629822
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1211629818}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.5
 --- !u!1 &1264865247
 GameObject:
   m_ObjectHideFlags: 0
@@ -1793,6 +1810,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8158047872921184680, guid: 6be8768d4c09e084ba277b7a16b61989, type: 3}
+      propertyPath: Coin1
+      value: 
+      objectReference: {fileID: 21300000, guid: 58de7530e3da84247afec8cfa28716ee, type: 3}
+    - target: {fileID: 8158047872921184680, guid: 6be8768d4c09e084ba277b7a16b61989, type: 3}
+      propertyPath: Coin5
+      value: 
+      objectReference: {fileID: 21300000, guid: dcc58f8abdf39c544ab48ca36855f44a, type: 3}
+    - target: {fileID: 8158047872921184680, guid: 6be8768d4c09e084ba277b7a16b61989, type: 3}
+      propertyPath: Coin10
+      value: 
+      objectReference: {fileID: 21300000, guid: 40cdeafa3701e4a4fa703ea1cca4492b, type: 3}
+    - target: {fileID: 8158047872921184680, guid: 6be8768d4c09e084ba277b7a16b61989, type: 3}
+      propertyPath: Coin_10
+      value: 
+      objectReference: {fileID: 21300000, guid: 40cdeafa3701e4a4fa703ea1cca4492b, type: 3}
+    - target: {fileID: 8158047872921184680, guid: 6be8768d4c09e084ba277b7a16b61989, type: 3}
+      propertyPath: CoinDrop
+      value: 
+      objectReference: {fileID: 8248961691631395977, guid: 49d37b0ec1a676a40a95805edf79ec47, type: 3}
     - target: {fileID: 8158047872921184681, guid: 6be8768d4c09e084ba277b7a16b61989, type: 3}
       propertyPath: m_Name
       value: Assets

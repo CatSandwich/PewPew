@@ -11,7 +11,12 @@ namespace Singletons
         public GameObject ElectricField;
 
         public GameObject ScoreDrop;
-    
+        public GameObject CoinDrop;
+
+        public Sprite Coin1;
+        public Sprite Coin5;
+        public Sprite Coin10;
+
         private void Start()
         {
             if (Instance != null)

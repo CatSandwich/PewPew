@@ -7,6 +7,7 @@ using UI.Game;
 using UnityEngine;
 using UnityEngine.UI;
 using HideFlags = UnityEngine.HideFlags;
+using Vector3 = UnityEngine.Vector3;
 
 namespace Singletons
 {
@@ -61,6 +62,7 @@ namespace Singletons
         private Pool<EnemyScript> EnemyPool;
         private Dictionary<int, List<GameObject>> ModelPools = new Dictionary<int, List<GameObject>>();
         private Pool<ScoreDrop> ScoreDropPool;
+        private Pool<CoinDrop> CoinDropPool;
 
         #endregion
 
@@ -100,27 +102,8 @@ namespace Singletons
             _nextSpawn = Time.time + 5f;
         }
 
-        public void Release(ScoreDrop score)
-        {
-            ScoreDropPool.Release(score);
-        }
-        private bool _removeEnemy(EnemyScript enemy, bool wasBoss)
-        {
-            if (!_currentEnemies.Contains(enemy)) return false;
-            if (wasBoss) _currentBosses.Remove(enemy);
-            _currentEnemies.Remove(enemy);
-            EnemyPool.Release(enemy);
-            return true;
-        }
-
-        private void _increaseScoreFromKill(EnemyFormationWaveType type, float score, EnemyScript enemy)
-        {
-            ScoreKeeper.AddKill(type);
-            ScoreKeeper.AddScore(score);
-            var scoreDrop = ScoreDropPool.Get();
-            scoreDrop.gameObject.transform.position = enemy.transform.position;
-            scoreDrop.gameObject.GetComponent<TextMeshPro>().text = ((int)score).ToString();
-        }
+        public void Release(ScoreDrop score) => ScoreDropPool.Release(score);
+        public void Release(CoinDrop coin) => CoinDropPool.Release(coin);
         #endregion
 
         #region Unity Methods
@@ -147,8 +130,9 @@ namespace Singletons
 
             EnemyPool = PoolManager.CreatePool(CreateEnemy, ActivateEnemy, DeactivateEnemy);
             ScoreDropPool = PoolManager.CreatePool(CreateScoreDrop, ActivateScoreDrop, DeactivateScoreDrop);
+            CoinDropPool = PoolManager.CreatePool(CreateCoinDrop, ActivateCoinDrop, DeactivateCoinDrop);
         }
-        
+
         private void Update()
         {
             DistanceDisplay.text = $"Distance: {ScoreKeeper.CurrentDistance:N1}km\nWave: {_wave}\nBoss Wave: {_isBossWaveActive}\n" + (_isBossWaveActive ? $"Bosses Remaining: {_currentBosses.Count}\n" : "" + $"\nScore: {ScoreKeeper.TotalScore}");
@@ -278,6 +262,7 @@ namespace Singletons
         {
             var go = new GameObject("Enemy");
             go.SetActive(false);
+            go.tag = "Enemy";
             go.hideFlags = HideFlags.HideInHierarchy;
             go.transform.parent = gameObject.transform;
             var script = go.AddComponent<EnemyScript>();
@@ -296,6 +281,28 @@ namespace Singletons
             item.ModelId = 0;
             item.gameObject.SetActive(false);
             item.gameObject.hideFlags = HideFlags.HideInHierarchy;
+        }
+        private GameObject GetModel(GameObject prefab)
+        {
+            var key = prefab.GetInstanceID();
+            if (!ModelPools.ContainsKey(key)) return Instantiate(prefab);
+            if (ModelPools[key].Count <= 0) return Instantiate(prefab);
+
+            var model = ModelPools[key][0];
+            ModelPools[key].Remove(model);
+
+            model.SetActive(true);
+            model.hideFlags = HideFlags.None;
+            return model;
+        }
+
+        private void ReleaseModel(int key, GameObject model)
+        {
+            model.SetActive(false);
+            model.hideFlags = HideFlags.HideInHierarchy;
+            model.transform.parent = gameObject.transform;
+            if (!ModelPools.ContainsKey(key)) ModelPools.Add(key, new List<GameObject>());
+            ModelPools[key].Add(model);
         }
 
         private ScoreDrop CreateScoreDrop()
@@ -318,27 +325,97 @@ namespace Singletons
             item.gameObject.hideFlags = HideFlags.HideInHierarchy;
         }
 
-        private GameObject GetModel(GameObject prefab)
+        private CoinDrop CreateCoinDrop()
         {
-            var key = prefab.GetInstanceID();
-            if (!ModelPools.ContainsKey(key)) return Instantiate(prefab);
-            if (ModelPools[key].Count <= 0) return Instantiate(prefab);
-
-            var model = ModelPools[key][0];
-            ModelPools[key].Remove(model);
-
-            model.SetActive(true);
-            model.hideFlags = HideFlags.None;
-            return model;
+            var go = Instantiate(Assets.Instance.CoinDrop);
+            go.SetActive(false);
+            go.hideFlags = HideFlags.HideInHierarchy;
+            return go.GetComponent<CoinDrop>();
         }
 
-        private void ReleaseModel(int key, GameObject model)
+        private void ActivateCoinDrop(CoinDrop item)
         {
-            model.SetActive(false);
-            model.hideFlags = HideFlags.HideInHierarchy;
-            model.transform.parent = gameObject.transform;
-            if (!ModelPools.ContainsKey(key)) ModelPools.Add(key, new List<GameObject>());
-            ModelPools[key].Add(model);
+            item.gameObject.SetActive(true);
+            item.gameObject.hideFlags = HideFlags.None;
+        }
+
+        private void DeactivateCoinDrop(CoinDrop item)
+        {
+            item.gameObject.SetActive(false);
+            item.gameObject.hideFlags = HideFlags.HideInHierarchy;
+        }
+
+        private bool _removeEnemy(EnemyScript enemy, bool wasBoss)
+        {
+            if (!_currentEnemies.Contains(enemy)) return false;
+            if (wasBoss) _currentBosses.Remove(enemy);
+            _currentEnemies.Remove(enemy);
+            EnemyPool.Release(enemy);
+            return true;
+        }
+
+        private void _increaseScoreFromKill(EnemyFormationWaveType type, float score, EnemyScript enemy)
+        {
+            ScoreKeeper.AddKill(type);
+            ScoreKeeper.AddScore(score);
+            DropScore(enemy.transform.position, score);
+            DropCoins(enemy.transform.position, (int)score);
+        }
+
+        private void DropScore(Vector3 position, float score)
+        {
+            var scoreDrop = ScoreDropPool.Get();
+            scoreDrop.gameObject.transform.position = position;
+            scoreDrop.gameObject.GetComponent<TextMeshPro>().text = ((int)score).ToString();
+        }
+
+        private void DropCoins(Vector3 position, int count)
+        {
+            while (count > 0)
+            {
+                int coinType;
+                if (count >= 10) coinType = Random.Next(3); // 0, 1, 2
+                else if (count >= 5) coinType = Random.Next(2); // 0, 1
+                else coinType = 0;
+                count -= _dropCoin(position, coinType);
+            }
+        }
+
+        private int _dropCoin(Vector3 position, int type)
+        {
+            CoinDrop coinDrop;
+            switch (type)
+            {
+                case 0:
+                {
+                    coinDrop = CoinDropPool.Get();
+                    coinDrop.gameObject.transform.position = position;
+                    coinDrop.GetRenderer().sprite = Assets.Instance.Coin1;
+                    coinDrop.Value = 1;
+                    return 1;
+                }
+                case 1:
+                {
+                    coinDrop = CoinDropPool.Get();
+                    coinDrop.gameObject.transform.position = position;
+                    coinDrop.GetRenderer().sprite = Assets.Instance.Coin5;
+                    coinDrop.Value = 5;
+                    return 5;
+                }
+                case 2:
+                {
+                    coinDrop = CoinDropPool.Get();
+                    coinDrop.gameObject.transform.position = position;
+                    coinDrop.GetRenderer().sprite = Assets.Instance.Coin10;
+                    coinDrop.Value = 10;
+                    return 10;
+                }
+                default:
+                {
+                    Debug.LogError($"Couldn't handle coin type [{type}]");
+                    return int.MaxValue;
+                }
+            }
         }
         #endregion
     }

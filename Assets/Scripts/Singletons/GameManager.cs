@@ -62,7 +62,8 @@ namespace Singletons
             get => PlayerPrefs.GetInt("coins", 0);
             set => PlayerPrefs.SetInt("coins", value);
         }
-        
+
+
         private void Awake()
         {
             if (Instance != null)
