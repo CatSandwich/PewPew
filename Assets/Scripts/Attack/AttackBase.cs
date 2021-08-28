@@ -9,7 +9,7 @@ namespace Attack
 {
     public abstract class AttackBase : MonoBehaviour, IAttack
     {        
-        protected static GameObject Parent => _parent ??= new GameObject("Bullet Parent");
+        protected static GameObject Parent => _parent ? _parent : _parent = new GameObject("Bullet Parent");
         private static GameObject _parent;
         protected static GameManager Manager => GameManager.Instance;
         public abstract float Damage { get; }

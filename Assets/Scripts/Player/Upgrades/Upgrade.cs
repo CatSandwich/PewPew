@@ -39,10 +39,12 @@ namespace Player.Upgrades
             }
         }
         
+        #if UNITY_EDITOR
         public void Debug()
         {
             if (ActiveIndex == GetTiers().Count - 1) ActiveIndex = 0;
             else ActiveIndex++;
         }
+        #endif
     }
 }

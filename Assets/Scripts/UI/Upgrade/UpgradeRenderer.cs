@@ -10,7 +10,7 @@ namespace UI
         public static GameManager Manager => GameManager.Instance;
         public void Start()
         {
-            var offset = 20f;
+            var offset = 4f;
             foreach (var upgrade in Manager.Upgrades)
             {
                 var component = Instantiate(Prefab, transform, false).GetComponent<Upgrade>();
@@ -19,6 +19,8 @@ namespace UI
                 component.UpgradeScriptable = upgrade;
                 offset += ((RectTransform) Prefab.transform).sizeDelta.y + 20f;
             }
+
+            offset -= 16f;
 
             Content.sizeDelta = new Vector2(Content.sizeDelta.x, offset);
         }
