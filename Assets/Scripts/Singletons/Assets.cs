@@ -9,6 +9,8 @@ namespace Singletons
         public GameObject HomingBullet;
         public GameObject Ray;
         public GameObject ElectricField;
+
+        public GameObject ScoreDrop;
     
         private void Start()
         {

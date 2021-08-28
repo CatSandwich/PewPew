@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Enemy;
 using Enemy.Data;
 using Enemy.Formations;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using HideFlags = UnityEngine.HideFlags;
@@ -74,21 +75,21 @@ namespace Singletons
         {
             var waveType = enemy.WaveType;
             if (!_removeEnemy(enemy, false)) return;
-            if (wasKilled) _increaseScoreFromKill(waveType, 10f);
+            if (wasKilled) _increaseScoreFromKill(waveType, 10f, enemy);
         }
         /// <summary> Called when a Bonus type Enemy is destroyed. </summary>
         public void OnBonusEnemyDestroyed(EnemyScript enemy, bool wasKilled)
         {
             var waveType = enemy.WaveType;
             if (!_removeEnemy(enemy, false)) return;
-            if (wasKilled) _increaseScoreFromKill(waveType, 50f);
+            if (wasKilled) _increaseScoreFromKill(waveType, 50f, enemy);
         }
         /// <summary> Called when a Boss type Enemy is destroyed. </summary>
         public void OnBossEnemyDestroyed(EnemyScript enemy, bool wasKilled)
         {
             var waveType = enemy.WaveType;
             if (!_removeEnemy(enemy, false)) return;
-            if(wasKilled) _increaseScoreFromKill(waveType, 1000f);
+            if(wasKilled) _increaseScoreFromKill(waveType, 1000f, enemy);
 
             // If this was the last boss for the round, continue on
             if (!_isBossWaveActive) return;
@@ -106,10 +107,12 @@ namespace Singletons
             return true;
         }
 
-        private void _increaseScoreFromKill(EnemyFormationWaveType type, float score)
+        private void _increaseScoreFromKill(EnemyFormationWaveType type, float score, EnemyScript enemy)
         {
             ScoreKeeper.AddKill(type);
-            ScoreKeeper.AddScore(100f);
+            ScoreKeeper.AddScore(score);
+            var go = Instantiate(Assets.Instance.ScoreDrop, enemy.transform.position, Quaternion.identity);
+            go.GetComponent<TextMeshPro>().text = ((int) score).ToString();
         }
         #endregion
 
