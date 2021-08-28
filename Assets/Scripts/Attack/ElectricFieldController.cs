@@ -10,11 +10,10 @@ namespace Attack
 {
     public class ElectricFieldController : CooldownAttackBase
     {
-        protected override float Lifetime => 8; //Manager.ElectricFieldLifetime;
-        private static float Speed => 5; //Manager.ElectricFieldMoveSpeed;
-        
-        public override float Damage => 5;
-        protected override float Cooldown => 0.5f;
+        protected override float Lifetime => Manager.ElectricFieldLifetime.Value;
+        private static float Speed => Manager.ElectricFieldSpeed.Value;
+        public override float Damage => Manager.ElectricFieldDamage.Value;
+        protected override float Cooldown => Manager.ElectricFieldAttackRate.Value;
         
         private Transform _target;
 
@@ -26,16 +25,9 @@ namespace Attack
         
         void Update()
         {
-            _retarget();
+            _target = GetClosestEnemy();
             if (!_target) return;
             transform.position = Vector2.MoveTowards(transform.position, _target.position, Speed * Time.deltaTime);
-        }
-        
-        private void _retarget()
-        {
-            _target = WaveController.Instance.GetCurrentEnemies()
-                .OrderBy(enemy => (transform.position - enemy.transform.position).magnitude)
-                .FirstOrDefault()?.transform;
         }
     }
 }

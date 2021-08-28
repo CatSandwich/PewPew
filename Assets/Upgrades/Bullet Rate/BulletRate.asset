@@ -14,4 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Bullet Rate
   Key: bullet_rate
-  Tiers: []
+  Tiers:
+  - {fileID: 11400000, guid: 3be7a1d8f5f97bd478de21ec57c3a03d, type: 2}
+  - {fileID: 11400000, guid: 807a86852ba190c448013ab622dbf154, type: 2}
+  - {fileID: 11400000, guid: 5fde16be4f39bb349a63ca103be25e4d, type: 2}
+  - {fileID: 11400000, guid: 605dc142def644c49baba9376c228326, type: 2}
+  - {fileID: 11400000, guid: a95a0ee0ace24654fb778bd64f3c33c6, type: 2}
+  - {fileID: 11400000, guid: bcfa787ec88e1f24e923759b92f21e99, type: 2}

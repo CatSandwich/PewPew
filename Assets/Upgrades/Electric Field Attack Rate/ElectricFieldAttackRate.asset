@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d96e601d5dc6a6241863413429380dbf, type: 3}
+  m_Name: ElectricFieldAttackRate
+  m_EditorClassIdentifier: 
+  Name: Electric Field Attack Rate
+  Key: electric_field_attack_rate
+  Tiers:
+  - {fileID: 11400000, guid: 58c3b987b46a9b44a853acb40c1602db, type: 2}
+  - {fileID: 11400000, guid: 170fb99942d08f04d86ec8bdaaca996d, type: 2}
+  - {fileID: 11400000, guid: abb382c98587e95409df766627bd7100, type: 2}
+  - {fileID: 11400000, guid: b13033da80296514e8a2bd909c451331, type: 2}

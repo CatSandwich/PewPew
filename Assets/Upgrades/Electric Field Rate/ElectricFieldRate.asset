@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d96e601d5dc6a6241863413429380dbf, type: 3}
+  m_Name: ElectricFieldRate
+  m_EditorClassIdentifier: 
+  Name: Electric Field Spawn Rate
+  Key: electric_field
+  Tiers:
+  - {fileID: 11400000, guid: 8829a59f0c81e494880dfcfb6cd7a0fe, type: 2}
+  - {fileID: 11400000, guid: 3184b808bbb57c44aa1dfe83bd57a114, type: 2}
+  - {fileID: 11400000, guid: 52d820cb8b84e974b970a21fc9596175, type: 2}
+  - {fileID: 11400000, guid: f8914360731f029418841b95e9e7a583, type: 2}
+  - {fileID: 11400000, guid: 703859300a9b4904e9b87ad343231525, type: 2}

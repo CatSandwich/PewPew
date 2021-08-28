@@ -1,6 +1,5 @@
 using Singletons;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace UI
 {

@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d96e601d5dc6a6241863413429380dbf, type: 3}
+  m_Name: ElectricFieldSpeed
+  m_EditorClassIdentifier: 
+  Name: Electric Field Speed
+  Key: electric_field_speed
+  Tiers:
+  - {fileID: 11400000, guid: 1aa17615175e70843b5fd081cd7c88e4, type: 2}
+  - {fileID: 11400000, guid: a3c517f15be9b184f98dc6f85294d7c9, type: 2}
+  - {fileID: 11400000, guid: 6c53a5bc940f6df4584a3660c2779d7f, type: 2}

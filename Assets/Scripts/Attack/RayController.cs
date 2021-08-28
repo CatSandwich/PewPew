@@ -7,10 +7,12 @@ namespace Attack
 {
     public class RayController : CooldownAttackBase
     {
-        public override float Damage => 5;
-        protected override float Cooldown => 1;
+        public override float Damage => Manager.RayDamage.Value;
+        protected override float Cooldown => Manager.RayCooldown.Value;
         protected override float Lifetime => 8f;
 
+        public SpriteRenderer Renderer;
+        
         private Transform _root;
         private float _startTime;
         private int _direction;
@@ -28,8 +30,8 @@ namespace Attack
     
         void Update()
         {
-            transform.position = _root.position + Vector3.up * transform.localScale.y / 2;
             transform.rotation = Quaternion.identity;
+            transform.position = _root.position + Vector3.up * Renderer.bounds.size.y / 2;
             var a = (Time.time - _startTime) / Lifetime;
             transform.RotateAround(_root.position, Vector3.forward * _direction, Mathf.Lerp(0, 90, a));
             if(a >= 1f) Destroy(gameObject);

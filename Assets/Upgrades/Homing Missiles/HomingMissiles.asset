@@ -9,11 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40651b86bfa17b34e91cf3dc8050de23, type: 3}
+  m_Script: {fileID: 11500000, guid: 5ef95f75940f6bc43a2f7ec7d0364f46, type: 3}
   m_Name: HomingMissiles
   m_EditorClassIdentifier: 
   Name: Homing Missiles
   Key: homing_missiles
   Tiers:
-  - {fileID: 11400000, guid: 35cf24fd88f254742ab2ede22b008925, type: 2}
-  - {fileID: 11400000, guid: 17d555491b3113543b5bd0075a4318e8, type: 2}
+  - {fileID: 11400000, guid: 361167aaa02f56140bf31daee1cb4102, type: 2}
+  - {fileID: 11400000, guid: 64f3d46fa0875684985bf216d1985c03, type: 2}
+  - {fileID: 11400000, guid: 848cc03625c7a844e91030377dc8663a, type: 2}

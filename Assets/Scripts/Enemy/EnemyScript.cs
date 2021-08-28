@@ -54,12 +54,6 @@ namespace Enemy
         /// Used to determine if a Unit was killed by the player, or destroyed by the environment.
         /// </summary>
         public bool WasKilled;
-
-        /// <summary>
-        /// Contains a list of projectiles/attacks which hit this Unit recently <br/>
-        /// This prevents a single attack from hitting this Unit too quickly.
-        /// </summary>
-        private readonly List<int> _cooldownList = new List<int>();
         
         private void Start()
         {
@@ -99,13 +93,7 @@ namespace Enemy
             }
             Destroyed(this);
         }
-
-        private IEnumerator _cooldown(int id, float cooldown)
-        {
-            _cooldownList.Add(id);
-            yield return new WaitForSeconds(cooldown);
-            _cooldownList.Remove(id);
-        }
+        
         public void OnChildTriggerEnter2D(Collider2D col)
         {
             if (!WaveController.RunIsAlive) return;

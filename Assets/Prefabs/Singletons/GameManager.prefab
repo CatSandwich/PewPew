@@ -50,3 +50,11 @@ MonoBehaviour:
   BulletRate: {fileID: 11400000, guid: 0f6e712a6eb10f7498dafb7656bbd29b, type: 2}
   HomingMissiles: {fileID: 11400000, guid: 8d977d0f0d7fe6b4b905e6bc0937a75a, type: 2}
   HomingMissileAccuracy: {fileID: 11400000, guid: db2145f93041c4e4cb9813cde228e540, type: 2}
+  ElectricFieldRate: {fileID: 11400000, guid: 4d715b30e936d41449b6934dfe0626e0, type: 2}
+  ElectricFieldLifetime: {fileID: 11400000, guid: a3f2a34663eab5c45bdbcd52d8dc6d14, type: 2}
+  ElectricFieldSpeed: {fileID: 11400000, guid: 3b6aee89a5dc88b4784fda654812bd60, type: 2}
+  ElectricFieldDamage: {fileID: 11400000, guid: 0ef1a00c8499b474d9cb2a0c239eb093, type: 2}
+  ElectricFieldAttackRate: {fileID: 11400000, guid: 4451ddf0709c2314f9857e50bb48aa11, type: 2}
+  RayCooldown: {fileID: 11400000, guid: 80732bd8bac705b43b08c3b60a560703, type: 2}
+  RayAttackRate: {fileID: 11400000, guid: c06e4f62a7bb48d4cba110294daec361, type: 2}
+  RayDamage: {fileID: 11400000, guid: 1188003c112eb86468a92f547b379fe7, type: 2}

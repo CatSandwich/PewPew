@@ -17,17 +17,10 @@ namespace Attack
             go.transform.rotation = Quaternion.Euler(direction);
         }
         
-        private void _retarget()
-        {
-            _target = WaveController.Instance.GetCurrentEnemies()
-                .OrderBy(enemy => (transform.position - enemy.transform.position).magnitude)
-                .FirstOrDefault()?.transform;
-        }
-        
         public new void Update()
         {
             base.Update();
-            _retarget();
+            _target = GetClosestEnemy();
             if (!_target) return;
             var vector = _target.position - transform.position;
             var targetAngle = _radToDeg(Mathf.Atan2(vector.y, vector.x));

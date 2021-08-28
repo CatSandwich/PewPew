@@ -16,3 +16,5 @@ MonoBehaviour:
   Key: bullet_speed
   Tiers:
   - {fileID: 11400000, guid: d31da0c38f97ff44e838858b3dd2ffdb, type: 2}
+  - {fileID: 11400000, guid: 8e893561b3ad2bb4ebb87a3a7933c7ff, type: 2}
+  - {fileID: 11400000, guid: 565a042f2b1e82842925e545bbc13fea, type: 2}

@@ -1,4 +1,5 @@
-﻿using Attack.Interfaces;
+﻿using System.Linq;
+using Attack.Interfaces;
 using Enemy;
 using Player;
 using Singletons;
@@ -14,5 +15,14 @@ namespace Attack
         public abstract float Damage { get; }
         public virtual bool ValidateHit(EnemyScript enemy) => true;
         public abstract void OnHit(EnemyScript enemy);
+
+        public Transform GetClosestEnemy()
+        {
+            // This is incredibly inefficient but so far no issues
+            return WaveController.Instance.GetCurrentEnemies()
+                    .Where(enemy => enemy.GetComponentInChildren<SpriteRenderer>() && enemy.GetComponentInChildren<SpriteRenderer>().isVisible)
+                    .OrderBy(enemy => (transform.position - enemy.transform.position).magnitude)
+                    .FirstOrDefault()?.transform;
+        }
     }
 }

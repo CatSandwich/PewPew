@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9284aa2dd44799143bf8fe0b5e20c244, type: 3}
-  m_Name: None
+  m_Script: {fileID: 11500000, guid: 7754afccdbdfbdb409f050ca30226e06, type: 3}
+  m_Name: ElectricFieldDamage1
   m_EditorClassIdentifier: 
-  Name: None
-  Description: No homing missiles
-  Value: 0
+  Name: Electric Field Damage 1
+  Description: Electric fields do 2 damage
+  Cost: 0
+  Value: 2

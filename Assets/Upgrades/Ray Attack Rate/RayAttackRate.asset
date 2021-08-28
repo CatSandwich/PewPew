@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d96e601d5dc6a6241863413429380dbf, type: 3}
+  m_Name: RayAttackRate
+  m_EditorClassIdentifier: 
+  Name: Ray Attack Rate
+  Key: ray_attack_rate
+  Tiers:
+  - {fileID: 11400000, guid: 161cc77f30c78264ea603925e947dfcc, type: 2}
+  - {fileID: 11400000, guid: 0514068442881674a9da421de5abff19, type: 2}
+  - {fileID: 11400000, guid: 094d77709d3a7ac47aab7782d6e3966f, type: 2}
+  - {fileID: 11400000, guid: 483626dde4dfb374da984503cbc5c760, type: 2}
+  - {fileID: 11400000, guid: 6fabc76672685574a865aad20e1e5b5c, type: 2}
+  - {fileID: 11400000, guid: d21aca05fab355540967cbeec141a1ab, type: 2}
