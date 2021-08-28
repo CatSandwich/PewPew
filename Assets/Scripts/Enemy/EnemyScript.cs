@@ -18,6 +18,8 @@ namespace Enemy
         public int ModelId;
         public GameObject Model;
 
+        public EnemyBase BaseData;
+
         /// <summary> Called when this Unit is Destroyed by any means. </summary>
         public event Action<EnemyScript> Destroyed = script => { };
         
