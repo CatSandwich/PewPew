@@ -16,8 +16,8 @@ MonoBehaviour:
   Description: Shoots 5 bullets
   Cost: 0
   Value:
-  - 0
   - -45
-  - 45
   - -22.5
+  - 0
   - 22.5
+  - 45

@@ -30,12 +30,12 @@ namespace Player.Upgrades
             get => PlayerPrefs.GetInt(Key, 0);
             set
             {
-            #if UNITY_EDITOR
-            if (value < 0 || value >= GetTiers().Count)
-                UnityEngine.Debug.LogError($"Tried setting upgrade {Name} to level {value}");
-            else
-            #endif
-                PlayerPrefs.SetInt(Key, value);
+                #if UNITY_EDITOR
+                if (value < 0 || value >= GetTiers().Count)
+                    UnityEngine.Debug.LogError($"Tried setting upgrade {Name} to level {value}");
+                else
+                #endif
+                    PlayerPrefs.SetInt(Key, value);
             }
         }
         
