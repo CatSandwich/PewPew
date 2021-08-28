@@ -3,6 +3,7 @@ using Enemy;
 using Enemy.Data;
 using Enemy.Formations;
 using TMPro;
+using UI.Game;
 using UnityEngine;
 using UnityEngine.UI;
 using HideFlags = UnityEngine.HideFlags;
@@ -59,6 +60,7 @@ namespace Singletons
 
         private Pool<EnemyScript> EnemyPool;
         private Dictionary<int, List<GameObject>> ModelPools = new Dictionary<int, List<GameObject>>();
+        private Pool<ScoreDrop> ScoreDropPool;
 
         #endregion
 
@@ -98,6 +100,10 @@ namespace Singletons
             _nextSpawn = Time.time + 5f;
         }
 
+        public void Release(ScoreDrop score)
+        {
+            ScoreDropPool.Release(score);
+        }
         private bool _removeEnemy(EnemyScript enemy, bool wasBoss)
         {
             if (!_currentEnemies.Contains(enemy)) return false;
@@ -111,8 +117,9 @@ namespace Singletons
         {
             ScoreKeeper.AddKill(type);
             ScoreKeeper.AddScore(score);
-            var go = Instantiate(Assets.Instance.ScoreDrop, enemy.transform.position, Quaternion.identity);
-            go.GetComponent<TextMeshPro>().text = ((int) score).ToString();
+            var scoreDrop = ScoreDropPool.Get();
+            scoreDrop.gameObject.transform.position = enemy.transform.position;
+            scoreDrop.gameObject.GetComponent<TextMeshPro>().text = ((int)score).ToString();
         }
         #endregion
 
@@ -139,7 +146,9 @@ namespace Singletons
                 Debug.LogError("WaveList not found! Was the WaveController deleted from the scene?");
 
             EnemyPool = PoolManager.CreatePool(CreateEnemy, ActivateEnemy, DeactivateEnemy);
+            ScoreDropPool = PoolManager.CreatePool(CreateScoreDrop, ActivateScoreDrop, DeactivateScoreDrop);
         }
+        
         private void Update()
         {
             DistanceDisplay.text = $"Distance: {ScoreKeeper.CurrentDistance:N1}km\nWave: {_wave}\nBoss Wave: {_isBossWaveActive}\n" + (_isBossWaveActive ? $"Bosses Remaining: {_currentBosses.Count}\n" : "" + $"\nScore: {ScoreKeeper.TotalScore}");
@@ -285,6 +294,26 @@ namespace Singletons
             ReleaseModel(item.ModelId, item.Model);
             item.Model = null;
             item.ModelId = 0;
+            item.gameObject.SetActive(false);
+            item.gameObject.hideFlags = HideFlags.HideInHierarchy;
+        }
+
+        private ScoreDrop CreateScoreDrop()
+        {
+            var go = Instantiate(Assets.Instance.ScoreDrop);
+            go.SetActive(false);
+            go.hideFlags = HideFlags.HideInHierarchy;
+            return go.GetComponent<ScoreDrop>();
+        }
+
+        private void ActivateScoreDrop(ScoreDrop item)
+        {
+            item.gameObject.SetActive(true);
+            item.gameObject.hideFlags = HideFlags.None;
+        }
+
+        private void DeactivateScoreDrop(ScoreDrop item)
+        {
             item.gameObject.SetActive(false);
             item.gameObject.hideFlags = HideFlags.HideInHierarchy;
         }
