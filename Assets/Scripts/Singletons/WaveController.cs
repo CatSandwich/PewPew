@@ -79,21 +79,21 @@ namespace Singletons
         {
             var waveType = enemy.WaveType;
             if (!_removeEnemy(enemy, false)) return;
-            if (wasKilled) _increaseScoreFromKill(waveType, 10f, enemy);
+            if (wasKilled) _handleEnemyKilled(waveType, enemy);
         }
         /// <summary> Called when a Bonus type Enemy is destroyed. </summary>
         public void OnBonusEnemyDestroyed(EnemyScript enemy, bool wasKilled)
         {
             var waveType = enemy.WaveType;
             if (!_removeEnemy(enemy, false)) return;
-            if (wasKilled) _increaseScoreFromKill(waveType, 50f, enemy);
+            if (wasKilled) _handleEnemyKilled(waveType, enemy);
         }
         /// <summary> Called when a Boss type Enemy is destroyed. </summary>
         public void OnBossEnemyDestroyed(EnemyScript enemy, bool wasKilled)
         {
             var waveType = enemy.WaveType;
             if (!_removeEnemy(enemy, false)) return;
-            if(wasKilled) _increaseScoreFromKill(waveType, 1000f, enemy);
+            if(wasKilled) _handleEnemyKilled(waveType, enemy);
 
             // If this was the last boss for the round, continue on
             if (!_isBossWaveActive) return;
@@ -229,6 +229,8 @@ namespace Singletons
                     enemy.Model = model;
                     enemy.ModelId = placement.Enemy.Prefab.GetInstanceID();
 
+                    enemy.BaseData = placement.Enemy;
+
                     enemy.SpawnPoint = spawn;
                     enemy.Speed = _currentFormation.GetSpeed();
                     enemy.Behaviour = _currentFormation.Behaviour;
@@ -354,12 +356,12 @@ namespace Singletons
             return true;
         }
 
-        private void _increaseScoreFromKill(EnemyFormationWaveType type, float score, EnemyScript enemy)
+        private void _handleEnemyKilled(EnemyFormationWaveType type, EnemyScript enemy)
         {
             ScoreKeeper.AddKill(type);
-            ScoreKeeper.AddScore(score);
-            DropScore(enemy.transform.position, score);
-            DropCoins(enemy.transform.position, (int)score);
+            ScoreKeeper.AddScore(enemy.BaseData.ScoreValue);
+            DropScore(enemy.transform.position, enemy.BaseData.ScoreValue);
+            DropCoins(enemy.transform.position, enemy.BaseData.CoinValue);
         }
 
         private void DropScore(Vector3 position, float score)

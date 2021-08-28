@@ -19,6 +19,14 @@ namespace UI.Game
 
         public SpriteRenderer GetRenderer() => _renderer;
 
+        private void OnTriggerEnter2D(Collider2D col)
+        {
+            if (!WaveController.RunIsAlive) return;
+            if (col.gameObject.name.Trim() != "Player") return;
+            GameManager.Instance.Coins += Value;
+            WaveController.Instance.Release(this);
+        }
+
         public void OnActivate()
         {
             _renderer = GetComponent<SpriteRenderer>();
@@ -43,13 +51,6 @@ namespace UI.Game
             if (_lifeCoroutine != null)
                 StopCoroutine(_lifeCoroutine);
             _lifeCoroutine = null;
-        }
-        public void OnTriggerEnter2D(Collider2D col)
-        {
-            if (!WaveController.RunIsAlive) return;
-            if (col.gameObject.name.Trim() != "Player") return;
-            GameManager.Instance.Coins += Value;
-            WaveController.Instance.Release(this);
         }
     }
 }

@@ -13,3 +13,6 @@ MonoBehaviour:
   m_Name: Boss 1
   m_EditorClassIdentifier: 
   Prefab: {fileID: 942163366997260415, guid: 97abdfba1d730a04cba0251c6fbed3df, type: 3}
+  MaxHealth: 20
+  ScoreValue: 50
+  CoinValue: 20
