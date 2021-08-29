@@ -6,5 +6,6 @@ namespace Enemy.Data
         Normal,
         Bonus,
         Boss,
+        Subordinate,
     }
 }

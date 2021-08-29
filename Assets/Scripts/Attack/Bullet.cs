@@ -28,7 +28,7 @@ namespace Attack
             transform.Translate(Time.deltaTime * Speed * Vector3.up);
         }
         
-        public override void OnHit(EnemyScript enemy)
+        public override void OnHit(AbstractEnemyScript enemy)
         {
             _pierce--;
             if(_pierce == 0) Destroy(gameObject);

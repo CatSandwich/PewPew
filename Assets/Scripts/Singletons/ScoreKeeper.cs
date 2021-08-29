@@ -16,6 +16,7 @@ namespace Singletons
         public static int KillsNormalOnly { get; private set; }
         public static int KillsBonusOnly { get; private set; }
         public static int KillsBossOnly { get; private set; }
+        public static int KillsSubordinatesOnly { get; private set; }
 
         public static void ResetRunScores()
         {
@@ -27,6 +28,7 @@ namespace Singletons
             KillsNormalOnly = 0;
             KillsBonusOnly = 0;
             KillsBossOnly = 0;
+            KillsSubordinatesOnly = 0;
         }
 
         public static void FreezeRunScores() => IsFrozen = true;
@@ -45,6 +47,9 @@ namespace Singletons
                     break;
                 case EnemyFormationWaveType.Boss:
                     KillsBossOnly++;
+                    break;
+                case EnemyFormationWaveType.Subordinate:
+                    KillsSubordinatesOnly++;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);

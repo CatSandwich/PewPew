@@ -1,6 +1,9 @@
-public interface IPoolable
+namespace Pooling
 {
-    void OnActivate();
-    void OnDeactivate();
-    void OnReset();
+    public interface IPoolable
+    {
+        void OnActivate();
+        void OnDeactivate();
+        void OnReset();
+    }
 }

@@ -2,12 +2,11 @@ using System.Collections.Generic;
 using Enemy;
 using Enemy.Data;
 using Enemy.Formations;
+using Pooling;
 using TMPro;
 using UI.Game;
 using UnityEngine;
 using UnityEngine.UI;
-using HideFlags = UnityEngine.HideFlags;
-using Vector3 = UnityEngine.Vector3;
 
 namespace Singletons
 {
@@ -30,7 +29,7 @@ namespace Singletons
         /// <summary> Contains a list of all Formations which can be selected. </summary>
         public AbstractFormation[] WaveList;
         /// <summary> Returns an IEnumerator of the current enemies when called. </summary>
-        public IEnumerable<EnemyScript> GetCurrentEnemies() => _currentEnemies;
+        public IEnumerable<AbstractEnemyScript> GetCurrentEnemies() => _currentEnemies;
         #endregion
 
         #region Private Fields
@@ -53,14 +52,15 @@ namespace Singletons
         private bool _isBossWaveActive;
 
         /// <summary> A list of all the currently alive Enemies. </summary>
-        private readonly List<EnemyScript> _currentEnemies = new List<EnemyScript>();
+        private readonly List<AbstractEnemyScript> _currentEnemies = new List<AbstractEnemyScript>();
         /// <summary> A List of all the currently alive Bosses. </summary>
-        private readonly List<EnemyScript> _currentBosses = new List<EnemyScript>();
+        private readonly List<AbstractEnemyScript> _currentBosses = new List<AbstractEnemyScript>();
 
         private readonly System.Random Random = new System.Random();
 
-        private Pool<EnemyScript> EnemyPool;
-        private Dictionary<int, List<GameObject>> ModelPools = new Dictionary<int, List<GameObject>>();
+        private Pool<WaveEnemyScript> WaveEnemyPool;
+        private Pool<SubordinateEnemyScript> SubordinateEnemyPool;
+        private readonly Dictionary<int, List<GameObject>> ModelPools = new Dictionary<int, List<GameObject>>();
         private Pool<ScoreDrop> ScoreDropPool;
         private Pool<CoinDrop> CoinDropPool;
 
@@ -68,38 +68,44 @@ namespace Singletons
 
         #region Public Methods
         /// <summary> Called when an Enemy Collides with the EndZone. </summary>
-        public void OnEnemyHitsEndZone(EnemyScript enemy)
+        public void OnEnemyHitsEndZone(AbstractEnemyScript enemy)
         {
             if (!_currentEnemies.Contains(enemy)) return;
             RunIsAlive = false;
             ScoreKeeper.FreezeRunScores();
         }
         /// <summary> Called when a Normal type Enemy is destroyed. </summary>
-        public void OnNormalEnemyDestroyed(EnemyScript enemy, bool wasKilled)
+        public void OnNormalEnemyDestroyed(WaveEnemyScript enemy, bool wasKilled)
         {
             var waveType = enemy.WaveType;
-            if (!_removeEnemy(enemy, false)) return;
-            if (wasKilled) _handleEnemyKilled(waveType, enemy);
+            if (!RemoveEnemy(enemy, false)) return;
+            if (wasKilled) HandleEnemyKilled(waveType, enemy);
         }
         /// <summary> Called when a Bonus type Enemy is destroyed. </summary>
-        public void OnBonusEnemyDestroyed(EnemyScript enemy, bool wasKilled)
+        public void OnBonusEnemyDestroyed(WaveEnemyScript enemy, bool wasKilled)
         {
             var waveType = enemy.WaveType;
-            if (!_removeEnemy(enemy, false)) return;
-            if (wasKilled) _handleEnemyKilled(waveType, enemy);
+            if (!RemoveEnemy(enemy, false)) return;
+            if (wasKilled) HandleEnemyKilled(waveType, enemy);
         }
         /// <summary> Called when a Boss type Enemy is destroyed. </summary>
-        public void OnBossEnemyDestroyed(EnemyScript enemy, bool wasKilled)
+        public void OnBossEnemyDestroyed(WaveEnemyScript enemy, bool wasKilled)
         {
             var waveType = enemy.WaveType;
-            if (!_removeEnemy(enemy, false)) return;
-            if(wasKilled) _handleEnemyKilled(waveType, enemy);
+            if (!RemoveEnemy(enemy, true)) return;
+            if (wasKilled) HandleEnemyKilled(waveType, enemy);
 
             // If this was the last boss for the round, continue on
             if (!_isBossWaveActive) return;
             if (_currentBosses.Count > 0) return;
             _isBossWaveActive = false;
             _nextSpawn = Time.time + 5f;
+        }
+
+        public void OnSubordinateEnemyDestroyed(SubordinateEnemyScript enemy, bool wasKilled)
+        {
+            if (!RemoveEnemy(enemy)) return;
+            if (wasKilled) HandleEnemyKilled(enemy);
         }
 
         public void Release(ScoreDrop score) => ScoreDropPool.Release(score);
@@ -128,10 +134,12 @@ namespace Singletons
             if (WaveList.Length < 1)
                 Debug.LogError("WaveList not found! Was the WaveController deleted from the scene?");
 
-            EnemyPool = PoolManager.CreatePool(CreateEnemy, ActivateEnemy, DeactivateEnemy);
+            WaveEnemyPool = PoolManager.CreatePool(CreateWaveEnemy, ActivateWaveEnemy, DeactivateWaveEnemy);
+            SubordinateEnemyPool = PoolManager.CreatePool(CreateSubordinateEnemy, ActivateSubordinateEnemy, DeactivateSubordinateEnemy);
             ScoreDropPool = PoolManager.CreatePool(CreateScoreDrop, ActivateScoreDrop, DeactivateScoreDrop);
             CoinDropPool = PoolManager.CreatePool(CreateCoinDrop, ActivateCoinDrop, DeactivateCoinDrop);
         }
+
 
         private void Update()
         {
@@ -149,21 +157,21 @@ namespace Singletons
         private void GetNextFormation()
         {
             var loopLimit = 0;
+            var forcingIllegalWave = false;
             while (_currentFormation == null)
             {
                 loopLimit++;
                 if (loopLimit > 100)
                 {
                     Debug.LogError("Unable to find a suitable wave!!");
-                    _nextSpawn = Time.time + 10f;
-                    break;
+                    forcingIllegalWave = true;
                 }
 
                 // Select a random wave
                 var index = Random.Next(WaveList.Length);
                 // If this wave is too difficult, skip it
-                if (WaveList[index].GetDifficultyMin() > Time.time || WaveList[index].GetDifficultyMax() < Time.time) continue;
-                if (WaveList[index].GetWaveType() == EnemyFormationWaveType.Boss && (_wave < 10 || _wave - _lastBossWave < 10)) continue;
+                if (!forcingIllegalWave && WaveList[index].GetDifficultyMin() > Time.time || WaveList[index].GetDifficultyMax() < Time.time) continue;
+                if (!forcingIllegalWave && WaveList[index].GetWaveType() == EnemyFormationWaveType.Boss && (_wave < 10 || _wave - _lastBossWave < 10)) continue;
                 _enemies?.Dispose();
                 // Grab the next formation and prepare it to spawn units
                 _currentFormation = WaveList[index];
@@ -218,7 +226,7 @@ namespace Singletons
                 foreach (var placement in _enemies.Current)
                 {
                     var spawn = new Vector3(GetSpawnXClamped(placement), _topRightBounds.y + 1f + placement.Offset.y, 0f);
-                    var enemy = EnemyPool.Get();
+                    var enemy = WaveEnemyPool.Get();
                     var model = GetModel(placement.Enemy.Prefab);
                     enemy.gameObject.transform.position = spawn;
                     model.transform.parent = enemy.gameObject.transform;
@@ -229,8 +237,9 @@ namespace Singletons
                     enemy.Model = model;
                     enemy.ModelId = placement.Enemy.Prefab.GetInstanceID();
 
-                    enemy.BaseData = placement.Enemy;
+                    enemy.Data = placement.Enemy;
 
+                    enemy.SpawnTime = Time.time;
                     enemy.SpawnPoint = spawn;
                     enemy.Speed = _currentFormation.GetSpeed();
                     enemy.Behaviour = _currentFormation.Behaviour;
@@ -239,7 +248,10 @@ namespace Singletons
                     enemy.Health = enemy.MaxHealth = placement.Enemy.MaxHealth;
                     enemy.WaveType = _currentFormation.GetWaveType();
 
+                    if (_currentFormation.GetWaveType() == EnemyFormationWaveType.Boss) _currentBosses.Add(enemy);
                     _currentEnemies.Add(enemy);
+
+                    enemy.Behaviour.PrepareBehaviour(enemy);
                     
                     waveID++;
                 }
@@ -260,30 +272,65 @@ namespace Singletons
             _nextSpawn = Time.time + _currentFormation.GetSpacing();
         }
 
-        private EnemyScript CreateEnemy()
+        public void SpawnSubordinate(SubordinateData target, Vector3 position)
         {
-            var go = new GameObject("Enemy");
+            var enemy = SubordinateEnemyPool.Get();
+            var model = GetModel(target.Prefab);
+            enemy.gameObject.transform.position = position;
+            model.transform.parent = enemy.gameObject.transform;
+            model.transform.localPosition = Vector3.zero;
+
+            model.GetComponent<ChildCollisionHandler>().Parent = enemy;
+
+            enemy.Model = model;
+            enemy.ModelId = target.Prefab.GetInstanceID();
+
+            enemy.Data = target;
+
+            enemy.SpawnTime = Time.time;
+            enemy.SpawnPoint = position;
+            enemy.Speed = target.Speed;
+            enemy.Behaviour = target.Behaviour;
+
+            enemy.Health = enemy.MaxHealth = target.MaxHealth;
+
+            _currentEnemies.Add(enemy);
+
+            enemy.Behaviour.PrepareBehaviour(enemy);
+        }
+
+        private WaveEnemyScript CreateWaveEnemy() => CreateEnemy<WaveEnemyScript>("Enemy");
+        private void ActivateWaveEnemy(WaveEnemyScript enemy) => ActivateEnemy(enemy);
+        private void DeactivateWaveEnemy(WaveEnemyScript enemy) => DeactivateEnemy(enemy);
+
+        private SubordinateEnemyScript CreateSubordinateEnemy() => CreateEnemy<SubordinateEnemyScript>("Subordinate");
+        private void ActivateSubordinateEnemy(SubordinateEnemyScript enemy) => ActivateEnemy(enemy);
+        private void DeactivateSubordinateEnemy(SubordinateEnemyScript enemy) => DeactivateEnemy(enemy);
+
+        private T CreateEnemy<T>(string enemyName) where T : Component
+        {
+            var go = new GameObject(enemyName);
             go.SetActive(false);
             go.tag = "Enemy";
             go.hideFlags = HideFlags.HideInHierarchy;
             go.transform.parent = gameObject.transform;
-            var script = go.AddComponent<EnemyScript>();
+            return go.AddComponent<T>();
+        }
 
-            return script;
-        }
-        private void ActivateEnemy(EnemyScript item)
+        private void ActivateEnemy(AbstractEnemyScript enemy)
         {
-            item.gameObject.SetActive(true);
-            item.gameObject.hideFlags = HideFlags.None;
+            enemy.gameObject.SetActive(true);
+            enemy.gameObject.hideFlags = HideFlags.None;
         }
-        private void DeactivateEnemy(EnemyScript item)
+        private void DeactivateEnemy(AbstractEnemyScript enemy)
         {
-            ReleaseModel(item.ModelId, item.Model);
-            item.Model = null;
-            item.ModelId = 0;
-            item.gameObject.SetActive(false);
-            item.gameObject.hideFlags = HideFlags.HideInHierarchy;
+            ReleaseModel(enemy.ModelId, enemy.Model);
+            enemy.Model = null;
+            enemy.ModelId = 0;
+            enemy.gameObject.SetActive(false);
+            enemy.gameObject.hideFlags = HideFlags.HideInHierarchy;
         }
+
         private GameObject GetModel(GameObject prefab)
         {
             var key = prefab.GetInstanceID();
@@ -347,21 +394,35 @@ namespace Singletons
             item.gameObject.hideFlags = HideFlags.HideInHierarchy;
         }
 
-        private bool _removeEnemy(EnemyScript enemy, bool wasBoss)
+        private bool RemoveEnemy(WaveEnemyScript enemy, bool wasBoss)
         {
             if (!_currentEnemies.Contains(enemy)) return false;
             if (wasBoss) _currentBosses.Remove(enemy);
             _currentEnemies.Remove(enemy);
-            EnemyPool.Release(enemy);
+            WaveEnemyPool.Release(enemy);
+            return true;
+        }
+        private bool RemoveEnemy(SubordinateEnemyScript enemy)
+        {
+            SubordinateEnemyPool.Release(enemy);
             return true;
         }
 
-        private void _handleEnemyKilled(EnemyFormationWaveType type, EnemyScript enemy)
+        private void HandleEnemyKilled(EnemyFormationWaveType type, WaveEnemyScript enemy)
         {
             ScoreKeeper.AddKill(type);
-            ScoreKeeper.AddScore(enemy.BaseData.ScoreValue);
-            DropScore(enemy.transform.position, enemy.BaseData.ScoreValue);
-            DropCoins(enemy.transform.position, enemy.BaseData.CoinValue);
+            ScoreKeeper.AddScore(enemy.Data.ScoreValue);
+            DropScore(enemy.transform.position, enemy.Data.ScoreValue);
+            DropCoins(enemy.transform.position, enemy.Data.CoinValue);
+            enemy.Behaviour.ClearData(enemy);
+        }
+        private void HandleEnemyKilled(SubordinateEnemyScript enemy)
+        {
+            ScoreKeeper.AddKill(EnemyFormationWaveType.Subordinate);
+            ScoreKeeper.AddScore(enemy.Data.ScoreValue);
+            DropScore(enemy.transform.position, enemy.Data.ScoreValue);
+            DropCoins(enemy.transform.position, enemy.Data.CoinValue);
+            enemy.Behaviour.ClearData(enemy);
         }
 
         private void DropScore(Vector3 position, float score)
@@ -379,11 +440,15 @@ namespace Singletons
                 if (count >= 10) coinType = Random.Next(3); // 0, 1, 2
                 else if (count >= 5) coinType = Random.Next(2); // 0, 1
                 else coinType = 0;
-                count -= _dropCoin(position, coinType);
+                count -= DropCoin(position, coinType);
             }
         }
 
-        private int _dropCoin(Vector3 position, int type)
+        /// <summary>
+        /// Drops a single coin at the given position.
+        /// </summary>
+        /// <returns>The value of the coin dropped.</returns>
+        private int DropCoin(Vector3 position, int type)
         {
             CoinDrop coinDrop;
             switch (type)

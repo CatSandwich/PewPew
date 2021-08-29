@@ -17,9 +17,9 @@ namespace Attack
             StartCoroutine(_life());
         }
         
-        public override bool ValidateHit(EnemyScript enemy) => !_cooldowns.Contains(enemy.GetInstanceID());
+        public override bool ValidateHit(AbstractEnemyScript enemy) => !_cooldowns.Contains(enemy.GetInstanceID());
         
-        public override void OnHit(EnemyScript enemy)
+        public override void OnHit(AbstractEnemyScript enemy)
         {
             StartCoroutine(_cooldown(enemy.GetInstanceID(), Cooldown));
         }

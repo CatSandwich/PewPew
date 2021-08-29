@@ -6,13 +6,13 @@ using UnityEngine;
 
 namespace Enemy.Formations
 {
-    [CreateAssetMenu()]
+    [CreateAssetMenu(menuName = "Enemies/Formations/SingleFileFormation")]
     // ReSharper disable once UnusedMember.Global
     public class SingleFileFormation : AbstractFormation
     {
         public EnemyFormationWaveType EnemyFormationWaveType;
 
-        public EnemyBase[] Enemies;
+        public WaveEnemyData[] Enemies;
         public float Speed;
         public float Spacing;
         public float DifficultyMin;
@@ -20,7 +20,7 @@ namespace Enemy.Formations
         public int Count;
 
         private bool _initialized;
-        private EnemyBase[] _enemies;
+        private WaveEnemyData[] _enemies;
         private Vector2 _spawnOffset;
 
         public override void Initialize()
@@ -32,7 +32,7 @@ namespace Enemy.Formations
 #endif
             if (!_initialized)
             {
-                _enemies = new EnemyBase[Count];
+                _enemies = new WaveEnemyData[Count];
                 for (var i = 0; i < Count; i++)
                 {
                     _enemies[i] = Enemies[i % Enemies.Length];
@@ -44,7 +44,7 @@ namespace Enemy.Formations
 
         public override float GetDifficultyMin() => DifficultyMin;
         public override float GetDifficultyMax() => DifficultyMax;
-        public override EnemyBase[] GetEnemies() => Enemies;
+        public override WaveEnemyData[] GetEnemies() => Enemies;
         public override EnemyFormationType GetFormationType() => EnemyFormationType.SingleFile;
         public override IEnumerable<EnemyFormationPlacement[]> GetNextEnemies() => _enemies.Select(enemy => new[] { new EnemyFormationPlacement(enemy, _spawnOffset) });
         public override float GetSpacing() => Spacing;

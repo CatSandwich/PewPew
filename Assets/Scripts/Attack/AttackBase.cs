@@ -13,8 +13,8 @@ namespace Attack
         private static GameObject _parent;
         protected static GameManager Manager => GameManager.Instance;
         public abstract float Damage { get; }
-        public virtual bool ValidateHit(EnemyScript enemy) => true;
-        public abstract void OnHit(EnemyScript enemy);
+        public virtual bool ValidateHit(AbstractEnemyScript enemy) => true;
+        public abstract void OnHit(AbstractEnemyScript enemy);
 
         public Transform GetClosestEnemy()
         {
