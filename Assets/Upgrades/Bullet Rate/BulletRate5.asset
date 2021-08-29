@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: 3/s
   Description: Shoots 3 bullets per second
-  Cost: 1250
+  Cost: 1000
   Value: 3

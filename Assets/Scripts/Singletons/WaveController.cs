@@ -27,7 +27,7 @@ namespace Singletons
         public static bool RunIsAlive { get; private set; }
 
         #region Public Fields
-        public Text DistanceDisplay;
+        //public Text DistanceDisplay;
         /// <summary> Contains a list of all Formations which can be selected. </summary>
         public AbstractFormation[] WaveList;
         /// <summary> Returns an IEnumerator of the current enemies when called. </summary>
@@ -195,7 +195,7 @@ namespace Singletons
 
         private void Update()
         {
-            DistanceDisplay.text = $"Distance: {ScoreKeeper.CurrentDistance:N1}km\nWave: {_wave}\nBoss Wave: {_isBossWaveActive}\n" + (_isBossWaveActive ? $"Bosses Remaining: {_currentBosses.Count}\n" : "" + $"\nScore: {ScoreKeeper.TotalScore}");
+            //DistanceDisplay.text = $"Distance: {ScoreKeeper.CurrentDistance:N1}km\nWave: {_wave}\nBoss Wave: {_isBossWaveActive}\n" + (_isBossWaveActive ? $"Bosses Remaining: {_currentBosses.Count}\n" : "" + $"\nScore: {ScoreKeeper.TotalScore}");
 
             _healthMultiplier = HealthStart * Mathf.Pow(1 + HealthGrowth, Time.timeSinceLevelLoad/ 60f);
             _scoreMultiplier = ScoreStart * Mathf.Pow(1 + ScoreGrowth, Time.timeSinceLevelLoad/ 60f);
