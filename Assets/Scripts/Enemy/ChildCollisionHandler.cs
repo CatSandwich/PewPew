@@ -1,3 +1,4 @@
+using Enemy.Interface;
 using UnityEngine;
 
 namespace Enemy

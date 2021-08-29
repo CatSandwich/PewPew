@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using Enemy.Behaviours;
 using Enemy.Data;
-using Enemy.Movement;
 using UnityEngine;
 
 namespace Enemy.Formations
@@ -15,10 +15,10 @@ namespace Enemy.Formations
         /// <summary> Returns the highest difficulty at which this Formation can spawn. </summary>
         public abstract float GetDifficultyMax();
         /// <summary>
-        /// Returns a complete list of <see cref="EnemyBase"/> prefabs which will spawn with this formation. <br/>
+        /// Returns a complete list of <see cref="WaveEnemyData"/> prefabs which will spawn with this formation. <br/>
         /// Some formations, such as the <see cref="DoubleFileFormation"/> will spawn more units than prefabs.
         /// </summary>
-        public abstract EnemyBase[] GetEnemies();
+        public abstract WaveEnemyData[] GetEnemies();
         /// <summary> Returns the Type of Formation this correlates to. </summary>
         public abstract EnemyFormationType GetFormationType();
         /// <summary> Returns a list of enemies which will spawn in this next wave. </summary>

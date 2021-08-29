@@ -1,4 +1,5 @@
 using System.Collections;
+using Pooling;
 using Singletons;
 using UnityEngine;
 
@@ -33,7 +34,7 @@ namespace UI.Game
             _rb = GetComponent<Rigidbody2D>();
             _rb.velocity = new Vector2(Random.Range(MinVelocity.x, MaxVelocity.x), Random.Range(MinVelocity.y, MaxVelocity.y));
 
-            _lifeCoroutine = StartCoroutine(_life());
+            _lifeCoroutine = StartCoroutine(LifeCoroutine());
         }
 
         public void OnDeactivate()
@@ -44,7 +45,7 @@ namespace UI.Game
         }
 
         public void OnReset() { }
-        private IEnumerator _life()
+        private IEnumerator LifeCoroutine()
         {
             yield return new WaitForSeconds(5f);
             WaveController.Instance.Release(this);

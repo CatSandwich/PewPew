@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Player.Upgrades;
 using UI;
+using UI.Upgrade;
 using UnityEngine;
 using Upgrade = Player.Upgrades.Upgrade;
 

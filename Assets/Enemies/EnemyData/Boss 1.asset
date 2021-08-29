@@ -9,10 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ec31668500dd594b95dc94365aa2414, type: 3}
+  m_Script: {fileID: 11500000, guid: 8fd13628d328f79449a6fde5ebc56056, type: 3}
   m_Name: Boss 1
   m_EditorClassIdentifier: 
   Prefab: {fileID: 942163366997260415, guid: 97abdfba1d730a04cba0251c6fbed3df, type: 3}
   MaxHealth: 20
   ScoreValue: 50
   CoinValue: 20
+  Subordinates:
+  - {fileID: 11400000, guid: 80869b7ce76378d4585f6a30e11f7236, type: 2}

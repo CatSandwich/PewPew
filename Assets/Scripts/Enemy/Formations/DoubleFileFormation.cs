@@ -6,13 +6,13 @@ using UnityEngine;
 
 namespace Enemy.Formations
 {
-    [CreateAssetMenu()]
+    [CreateAssetMenu(menuName = "Enemies/Formations/DoubleFileFormation")]
     // ReSharper disable once UnusedMember.Global
     public class DoubleFileFormation : AbstractFormation
     {
         public EnemyFormationWaveType EnemyFormationWaveType;
         
-        public EnemyBase[] Enemies;
+        public WaveEnemyData[] Enemies;
         public float Speed;
         public float Spacing;
         public float DifficultyMin;
@@ -23,7 +23,7 @@ namespace Enemy.Formations
         public bool RandomizeSpawnX;
 
         private bool _initialized;
-        private EnemyBase[] _enemies;
+        private WaveEnemyData[] _enemies;
         private Vector2 _spawnOffset;
 
         public override void Initialize()
@@ -35,7 +35,7 @@ namespace Enemy.Formations
 #endif
             if (!_initialized)
             {
-                _enemies = new EnemyBase[Count];
+                _enemies = new WaveEnemyData[Count];
                 for (var i = 0; i < Count; i++)
                 {
                     _enemies[i] = Enemies[i % Enemies.Length];
@@ -47,7 +47,7 @@ namespace Enemy.Formations
 
         public override float GetDifficultyMin() => DifficultyMin;
         public override float GetDifficultyMax() => DifficultyMax;
-        public override EnemyBase[] GetEnemies() => Enemies;
+        public override WaveEnemyData[] GetEnemies() => Enemies;
         public override EnemyFormationType GetFormationType() => EnemyFormationType.DoubleFile;
         public override IEnumerable<EnemyFormationPlacement[]> GetNextEnemies() => _enemies.Select(enemy => new[] { new EnemyFormationPlacement(enemy, new Vector2(_spawnOffset.x - (RankGap / 2f), 0f)),
                                                                                                                     new EnemyFormationPlacement(enemy, new Vector2(_spawnOffset.x + (RankGap / 2f), 0f)) });

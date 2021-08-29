@@ -1,8 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
-namespace UI
+namespace UI.Upgrade
 {
     public class UpgradeGroup : IEnumerable<Player.Upgrades.Upgrade>
     {

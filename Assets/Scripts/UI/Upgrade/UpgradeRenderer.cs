@@ -1,7 +1,7 @@
 using Singletons;
 using UnityEngine;
 
-namespace UI
+namespace UI.Upgrade
 {
     public class UpgradeRenderer : MonoBehaviour
     {
