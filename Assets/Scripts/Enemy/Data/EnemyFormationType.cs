@@ -11,6 +11,7 @@ namespace Enemy.Data
         VFormation,
         HFormation,
 
-        Snake
+        Snake,
+        Block,
     }
 }
