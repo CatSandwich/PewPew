@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Bullet Speed 2
   Description: Bullets move 15 units per second
-  Cost: 0
+  Cost: 250
   Value: 15

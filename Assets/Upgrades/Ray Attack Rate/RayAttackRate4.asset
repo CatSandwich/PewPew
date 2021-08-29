@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Ray Attack Rate 4
   Description: Rays can hit each enemy once every 1 second
-  Cost: 0
+  Cost: 2500
   Value: 1

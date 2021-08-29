@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Electric Field 1
   Description: An electric field will spawn every 10 seconds
-  Cost: 0
+  Cost: 75
   Value: 0.1

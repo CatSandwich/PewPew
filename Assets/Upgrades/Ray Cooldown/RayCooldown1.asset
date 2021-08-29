@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Ray Cooldown 1
   Description: The ray takes 120 seconds to charge
-  Cost: 0
+  Cost: 500
   Value: 0.008333334

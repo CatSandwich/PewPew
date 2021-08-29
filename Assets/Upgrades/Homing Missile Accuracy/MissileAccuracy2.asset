@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7754afccdbdfbdb409f050ca30226e06, type: 3}
-  m_Name: BulletDamage5
+  m_Name: MissileAccuracy2
   m_EditorClassIdentifier: 
-  Name: 5 Damage
-  Description: Bullets do 5 damage
-  Value: 5
+  Name: Accurate Missiles
+  Description: Missiles are very accurate
+  Cost: 500
+  Value: 1

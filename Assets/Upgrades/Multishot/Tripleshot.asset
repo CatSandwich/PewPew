@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Tripleshot
   Description: Shoots 3 bullets
-  Cost: 0
+  Cost: 250
   Value:
   - -22.5
   - 0

@@ -32,6 +32,21 @@ namespace Singletons
         public AbstractFormation[] WaveList;
         /// <summary> Returns an IEnumerator of the current enemies when called. </summary>
         public IEnumerable<AbstractEnemyScript> GetCurrentEnemies() => _currentEnemies;
+
+
+        /// <summary> The starting score value multiplier. </summary>
+        [Header("Difficulty Multiplier Scaling")] 
+        public float ScoreStart;
+        /// <summary> The rate at which the score multiplier increases exponentially. </summary>
+        public float ScoreGrowth;
+        /// <summary> The starting coin multiplier. </summary>
+        public float CoinsStart;
+        /// <summary> The rate at which the coin multiplier increases exponentially. </summary>
+        public float CoinsGrowth;
+        /// <summary> The starting enemy health multiplier. </summary>
+        public float HealthStart;
+        /// <summary> The rate at which the enemy health multiplier increases exponentially. </summary>
+        public float HealthGrowth;
         #endregion
 
         #region Private Fields
@@ -66,6 +81,10 @@ namespace Singletons
         private Pool<ScoreDrop> ScoreDropPool;
         private Pool<CoinDrop> CoinDropPool;
 
+        private float _healthMultiplier;
+        private float _coinMultiplier;
+        private float _scoreMultiplier;
+        
         #endregion
 
         #region Public Methods
@@ -104,7 +123,7 @@ namespace Singletons
             if (!_isBossWaveActive) return;
             if (_currentBosses.Count > 0) return;
             _isBossWaveActive = false;
-            _nextSpawn = Time.time + 5f;
+            _nextSpawn = Time.timeSinceLevelLoad+ 5f;
         }
 
         public void OnSubordinateEnemyDestroyed(SubordinateEnemyScript enemy, bool wasKilled)
@@ -155,7 +174,7 @@ namespace Singletons
         {
             ScoreKeeper.ResetRunScores();
             RunIsAlive = true;
-            _nextSpawn = Time.time + 5f;
+            _nextSpawn = Time.timeSinceLevelLoad+ 5f;
 
             _bottomLeftBounds = Camera.main.ScreenToWorldPoint(Vector3.zero);
             _topRightBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height));
@@ -178,9 +197,13 @@ namespace Singletons
         {
             DistanceDisplay.text = $"Distance: {ScoreKeeper.CurrentDistance:N1}km\nWave: {_wave}\nBoss Wave: {_isBossWaveActive}\n" + (_isBossWaveActive ? $"Bosses Remaining: {_currentBosses.Count}\n" : "" + $"\nScore: {ScoreKeeper.TotalScore}");
 
+            _healthMultiplier = HealthStart * Mathf.Pow(1 + HealthGrowth, Time.timeSinceLevelLoad/ 60f);
+            _scoreMultiplier = ScoreStart * Mathf.Pow(1 + ScoreGrowth, Time.timeSinceLevelLoad/ 60f);
+            _coinMultiplier = CoinsStart * Mathf.Pow(1 + CoinsGrowth, Time.timeSinceLevelLoad/ 60f);
+            
             if (!RunIsAlive) return;
 
-            if (Time.time > _nextSpawn)
+            if (Time.timeSinceLevelLoad> _nextSpawn)
                 SpawnEnemy();
         }
 
@@ -209,7 +232,7 @@ namespace Singletons
                 // Select a random wave
                 var index = Random.Next(WaveList.Length);
                 // If this wave is too difficult, skip it
-                if (!forcingIllegalWave && WaveList[index].GetDifficultyMin() > Time.time || WaveList[index].GetDifficultyMax() < Time.time) continue;
+                if (!forcingIllegalWave && WaveList[index].GetDifficultyMin() > Time.timeSinceLevelLoad || WaveList[index].GetDifficultyMax() < Time.timeSinceLevelLoad) continue;
                 if (!forcingIllegalWave && WaveList[index].GetWaveType() == EnemyFormationWaveType.Boss && (_wave < 10 || _wave - _lastBossWave < 10)) continue;
                 _enemies?.Dispose();
                 // Grab the next formation and prepare it to spawn units
@@ -265,7 +288,7 @@ namespace Singletons
             // If this is a boss wave, wait until the boss is dead
             if (_isBossWaveActive)
             {
-                _nextSpawn = Time.time + 5f;
+                _nextSpawn = Time.timeSinceLevelLoad + 5f;
                 return;
             }
 
@@ -293,13 +316,13 @@ namespace Singletons
 
                     enemy.Data = placement.Enemy;
 
-                    enemy.SpawnTime = Time.time;
+                    enemy.SpawnTime = Time.timeSinceLevelLoad;
                     enemy.SpawnPoint = spawn;
                     enemy.Speed = _currentFormation.GetSpeed();
                     enemy.Behaviour = _currentFormation.Behaviour;
                     enemy.Wave = _wave;
                     enemy.WaveId = waveID;
-                    enemy.Health = enemy.MaxHealth = placement.Enemy.MaxHealth;
+                    enemy.Health = enemy.MaxHealth = placement.Enemy.MaxHealth * _healthMultiplier;
                     enemy.WaveType = _currentFormation.GetWaveType();
 
                     if (_currentFormation.GetWaveType() == EnemyFormationWaveType.Boss) _currentBosses.Add(enemy);
@@ -319,11 +342,11 @@ namespace Singletons
             if (!_enemies.MoveNext())
             {
                 _currentFormation = null;
-                _nextSpawn = Time.time + 5f;
+                _nextSpawn = Time.timeSinceLevelLoad + 5f;
                 return;
             }
 
-            _nextSpawn = Time.time + _currentFormation.GetSpacing();
+            _nextSpawn = Time.timeSinceLevelLoad + _currentFormation.GetSpacing();
         }
 
         public void SpawnSubordinate(AbstractEnemyScript leader, SubordinateData target, Vector3 position)
@@ -341,12 +364,12 @@ namespace Singletons
 
             enemy.Data = target;
 
-            enemy.SpawnTime = Time.time;
+            enemy.SpawnTime = Time.timeSinceLevelLoad;
             enemy.SpawnPoint = position;
             enemy.Speed = target.Speed;
             enemy.Behaviour = target.Behaviour;
 
-            enemy.Health = enemy.MaxHealth = target.MaxHealth;
+            enemy.Health = enemy.MaxHealth = target.MaxHealth * _healthMultiplier;
 
             _currentEnemies.Add(enemy);
 
@@ -469,16 +492,16 @@ namespace Singletons
         private void HandleEnemyKilled(EnemyFormationWaveType type, WaveEnemyScript enemy)
         {
             ScoreKeeper.AddKill(type);
-            ScoreKeeper.AddScore(enemy.Data.ScoreValue);
-            DropScore(enemy.transform.position, enemy.Data.ScoreValue);
-            DropCoins(enemy.transform.position, enemy.Data.CoinValue);
+            ScoreKeeper.AddScore(enemy.Data.ScoreValue * _scoreMultiplier);
+            DropScore(enemy.transform.position, enemy.Data.ScoreValue * _scoreMultiplier);
+            DropCoins(enemy.transform.position, (int)(enemy.Data.CoinValue * _coinMultiplier));
         }
         private void HandleEnemyKilled(SubordinateEnemyScript enemy)
         {
             ScoreKeeper.AddKill(EnemyFormationWaveType.Subordinate);
-            ScoreKeeper.AddScore(enemy.Data.ScoreValue);
-            DropScore(enemy.transform.position, enemy.Data.ScoreValue);
-            DropCoins(enemy.transform.position, enemy.Data.CoinValue);
+            ScoreKeeper.AddScore(enemy.Data.ScoreValue * _scoreMultiplier);
+            DropScore(enemy.transform.position, enemy.Data.ScoreValue * _scoreMultiplier);
+            DropCoins(enemy.transform.position, (int)(enemy.Data.CoinValue * _coinMultiplier));
         }
 
         private void DropScore(Vector3 position, float score)

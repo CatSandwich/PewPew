@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Electric Field Lifetime 3
   Description: Electric fields last 10 seconds
-  Cost: 0
+  Cost: 2500
   Value: 10

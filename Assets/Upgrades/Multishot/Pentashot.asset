@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Pentashot
   Description: Shoots 5 bullets
-  Cost: 0
+  Cost: 1500
   Value:
   - -45
   - -22.5

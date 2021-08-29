@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Electric Field Speed 1
   Description: Electric fields move 8 units per second
-  Cost: 0
+  Cost: 500
   Value: 8

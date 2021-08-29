@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7754afccdbdfbdb409f050ca30226e06, type: 3}
   m_Name: BulletRate1
   m_EditorClassIdentifier: 
-  Name: 1/s
-  Description: Shoots bullets once per second
-  Cost: 0
-  Value: 1
+  Name: 1.2/s
+  Description: Shoots 1.2 bullets per second
+  Cost: 5
+  Value: 1.2

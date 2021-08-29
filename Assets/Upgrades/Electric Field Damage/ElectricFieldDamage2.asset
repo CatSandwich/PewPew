@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Electric Field Damage 2
   Description: Electric fields do 3 damage
-  Cost: 0
+  Cost: 500
   Value: 3

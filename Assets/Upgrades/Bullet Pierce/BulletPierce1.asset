@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Bullet Pierce 0
   Description: Bullets will be destroyed on first contact
+  Cost: 0
   Value: 1

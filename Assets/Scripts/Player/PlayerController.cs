@@ -59,6 +59,8 @@ namespace Player
                 Manager.BulletPierce.Debug();
             if (Input.GetKeyDown(KeyCode.H))
                 Manager.HomingMissiles.Debug();
+            if (Input.GetKeyDown(KeyCode.C))
+                Manager.Coins += 1000;
             #endif
             #endregion
         }

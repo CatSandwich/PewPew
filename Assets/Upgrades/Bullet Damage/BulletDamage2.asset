@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7754afccdbdfbdb409f050ca30226e06, type: 3}
   m_Name: BulletDamage2
   m_EditorClassIdentifier: 
-  Name: 2 Damage
-  Description: Bullets do 2 damage
-  Value: 2
+  Name: 3 Damage
+  Description: Bullets do 3 damage
+  Cost: 50
+  Value: 3

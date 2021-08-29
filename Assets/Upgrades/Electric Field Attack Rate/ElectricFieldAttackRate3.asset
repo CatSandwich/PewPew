@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Electric Field Attack Rate 3
   Description: Electric fields can hit each enemy once every second
-  Cost: 0
+  Cost: 1000
   Value: 1

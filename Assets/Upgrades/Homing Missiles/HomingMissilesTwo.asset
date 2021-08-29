@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Homing Missiles 1
   Description: 2 homing missiles are shot
-  Cost: 0
+  Cost: 100
   Value:
   - 11.25
   - -11.25

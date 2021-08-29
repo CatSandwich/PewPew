@@ -10,9 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7754afccdbdfbdb409f050ca30226e06, type: 3}
-  m_Name: BulletRate3.0
+  m_Name: BulletDamage0
   m_EditorClassIdentifier: 
-  Name: 3/s
-  Description: Shoots 3 bullets per second
-  Cost: 0
-  Value: 3
+  Name: 1 Damage
+  Description: Bullets do 1 damage
+  Value: 1

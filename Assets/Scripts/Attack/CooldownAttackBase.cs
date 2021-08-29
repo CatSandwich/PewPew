@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Enemy;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Attack
 {

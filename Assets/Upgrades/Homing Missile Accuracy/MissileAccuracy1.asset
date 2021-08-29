@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7754afccdbdfbdb409f050ca30226e06, type: 3}
-  m_Name: MissileAccuracy1.0
+  m_Name: MissileAccuracy1
   m_EditorClassIdentifier: 
-  Name: Accurate Missiles
-  Description: Missiles are very accurate
-  Cost: 0
-  Value: 1
+  Name: More Accurate
+  Description: More accurate missiles
+  Cost: 250
+  Value: 0.5

@@ -23,6 +23,20 @@ namespace Attack
             go.transform.position = new Vector3(position.x, position.y, 0);
         }
         
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if(other.GetComponentInParent<AbstractEnemyScript>() != null)
+                StartCoroutine(_triggerHack());
+        }
+
+        private IEnumerator _triggerHack()
+        {
+            var position = transform.position;
+            transform.position = new Vector3(-1000f, -1000f, -1000f);
+            yield return new WaitForSeconds(0.1f);
+            transform.position = position + (position + new Vector3(Random.Range(-100, 100), Random.Range(-100, 100))).normalized * 5;
+        }
+        
         void Update()
         {
             _target = GetClosestEnemy();

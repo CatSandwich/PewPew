@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Bullet Pierce 2
   Description: Bullets will be destroyed after hitting 3 enemies
+  Cost: 500
   Value: 3

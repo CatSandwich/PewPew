@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Ray Damage 2
   Description: Rays deal 15 damage
-  Cost: 0
+  Cost: 2500
   Value: 15
