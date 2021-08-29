@@ -922,7 +922,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DistanceDisplay: {fileID: 2012489464}
   WaveList:
-  - {fileID: 11400000, guid: 98bed4bcabfd29e4b9f0c880c420dad3, type: 2}
+  - {fileID: 11400000, guid: 8f6f14f6643109c4594f6daf2aa22be5, type: 2}
 --- !u!4 &1102263362
 Transform:
   m_ObjectHideFlags: 0

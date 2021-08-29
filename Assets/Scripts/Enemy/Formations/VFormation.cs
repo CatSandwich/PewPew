@@ -6,22 +6,29 @@ using UnityEngine;
 
 namespace Enemy.Formations
 {
-    [CreateAssetMenu(menuName = "Enemies/Formations/SingleFileFormation")]
+    [CreateAssetMenu(menuName = "Enemies/Formations/VFormation")]
     // ReSharper disable once UnusedMember.Global
-    public class SingleFileFormation : AbstractFormation
+    public class VFormation : AbstractFormation
     {
         public EnemyFormationWaveType EnemyFormationWaveType;
 
         public WaveEnemyData[] Enemies;
         public float Speed = 1;
         public float Spacing = 1;
+        public float Spread = 0.5f;
+
         [Min(0)] public float DifficultyMin;
         public float DifficultyMax = float.MaxValue;
-        [Min(1)] public int Count = 1;
+        [Min(5)] public int Count = 5;
 
         private bool _initialized;
         private WaveEnemyData[] _enemies;
         private Vector2 _spawnOffset;
+
+        private void OnValidate()
+        {
+            if (Count % 2 == 0) Count += 1;
+        }
 
         public override void Initialize()
         {
@@ -45,8 +52,35 @@ namespace Enemy.Formations
         public override float GetDifficultyMin() => DifficultyMin;
         public override float GetDifficultyMax() => DifficultyMax;
         public override WaveEnemyData[] GetEnemies() => Enemies;
-        public override EnemyFormationType GetFormationType() => EnemyFormationType.SingleFile;
-        public override IEnumerable<EnemyFormationPlacement[]> GetNextEnemies() => _enemies.Select(enemy => new[] { new EnemyFormationPlacement(enemy, _spawnOffset) });
+        public override EnemyFormationType GetFormationType() => EnemyFormationType.VFormation;
+        public override IEnumerable<EnemyFormationPlacement[]> GetNextEnemies()
+        {
+            var i = 0;
+            var row = 0;
+            while (i < _enemies.Length)
+            {
+                if (i == 0)
+                {
+                    yield return new[] { new EnemyFormationPlacement(_enemies[i], _spawnOffset) };
+                }
+                else if (i == _enemies.Length - 1)
+                {
+                    yield return new[] { new EnemyFormationPlacement(_enemies[i], _spawnOffset - new Vector2(Spread * row, 0f)) };
+                }
+                else
+                {
+                    yield return new[]
+                    {
+                        new EnemyFormationPlacement(_enemies[i]    , _spawnOffset - new Vector2(Spread * row, 0f)),
+                        new EnemyFormationPlacement(_enemies[(i + 1) % _enemies.Length], _spawnOffset + new Vector2(Spread * row, 0f))
+                    };
+                    i++;
+                }
+                i++;
+                row++;
+            }
+        }
+
         public override float GetSpacing() => Spacing;
         public override float GetSpeed() => Speed;
         public override EnemyFormationWaveType GetWaveType() => EnemyFormationWaveType;

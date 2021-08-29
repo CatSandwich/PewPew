@@ -5,13 +5,15 @@ using UnityEngine;
 
 namespace Enemy.Behaviours.Bosses
 {
-    [CreateAssetMenu(menuName = "Enemies/Behaviours/Unique/BossBehaviour1")]
+    [CreateAssetMenu(menuName = "Enemies/Behaviours/Unique/BossBehaviour2")]
     // ReSharper disable once UnusedMember.Global
-    public class BossBehaviour1 : AbstractBehaviour
+    public class BossBehaviour2 : AbstractBehaviour
     {
         public override float GetLeftBounds() => WaveController.LeftBounds + 1f;
         public override float GetRightBounds() => WaveController.RightBounds - 1f;
         public float GetTopBounds() => WaveController.TopBounds;
+
+        public Vector2 SubordinateDelayRange = new Vector2(1f, 5f);
 
         private readonly Dictionary<AbstractEnemyScript, UnitData> _data = new Dictionary<AbstractEnemyScript, UnitData>();
 
@@ -26,6 +28,7 @@ namespace Enemy.Behaviours.Bosses
         public void DoBehaviour(WaveEnemyScript target)
         {
             if (!WaveController.RunIsAlive) return;
+
             var data = _data[target];
 
             switch (data.MovementPhase)
@@ -34,31 +37,25 @@ namespace Enemy.Behaviours.Bosses
                 case 0:
                 {
                     target.transform.Translate(target.Speed * Time.deltaTime * Vector3.down);
-                    if (target.transform.position.y <= GetTopBounds()) data.MovementPhase = 1;
+                    if (target.transform.position.y <= GetTopBounds())
+                    {
+                        SetNewPosition(target);
+                        data.MovementPhase = 1;
+                    }
                     break;
                 }
-                // Move Left
+
                 case 1:
                 {
-                    target.transform.Translate(target.Speed * Time.deltaTime * Vector3.left);
-                    if (target.transform.position.x <= GetLeftBounds())
+                    target.transform.Translate(target.Speed * Time.deltaTime * (data.TargetPosition - target.transform.position).normalized);
+                    if (Vector3.Distance(target.transform.position, data.TargetPosition) < 0.01f)
                     {
-                        data.MovementPhase = 2;
-                        data.TurnTime = Time.time;
-                    }
-                    break;
-                }
-                // Move Right
-                case 2:
-                {
-                    target.transform.Translate(target.Speed * Time.deltaTime * Vector3.right);
-                    if (target.transform.position.x >= GetRightBounds())
-                    {
+                        SetNewPosition(target);
                         data.MovementPhase = 1;
-                        data.TurnTime = Time.time;
                     }
                     break;
                 }
+
                 default:
                 {
                     Debug.LogError($"Unknown Phase #{data.MovementPhase} for {GetType()}!");
@@ -67,37 +64,31 @@ namespace Enemy.Behaviours.Bosses
                 }
             }
 
-            var bossData = (BossData)target.Data;
-
-            if (data.AttackPhase != 1 && Mathf.Abs(Time.time - data.TurnTime) > 1f) return;
             if (Time.time < data.NextSubordinate) return;
 
+            var bossData = (BossData) target.Data;
+
             WaveController.Instance.SpawnSubordinate(target, bossData.Subordinates[0], target.transform.position);
-            if (data.SubordinateCounter < 4)
-            {
-                data.NextSubordinate = Time.time + 0.5f;
-                data.SubordinateCounter++;
-                data.AttackPhase = 1;
-            }
-            else
-            {
-                data.NextSubordinate = Time.time + 10f;
-                data.SubordinateCounter = 0;
-                data.AttackPhase = 0;
-            }
+            data.NextSubordinate = Time.time + Random.Range(SubordinateDelayRange.x, SubordinateDelayRange.y);
         }
+
         public override void ClearData(AbstractEnemyScript target)
         {
             if (_data.ContainsKey(target)) _data.Remove(target);
         }
 
+        private void SetNewPosition(AbstractEnemyScript target)
+        {
+            var top = GetTopBounds();
+            var half = top / 2f;
+            _data[target].TargetPosition = new Vector3(Random.Range(-GetLeftBounds(), GetLeftBounds()), Random.Range(half, top), 0f);
+        }
+
         private class UnitData
         {
             public int MovementPhase;
-            public int AttackPhase;
             public float NextSubordinate;
-            public int SubordinateCounter;
-            public float TurnTime;
+            public Vector3 TargetPosition;
         }
     }
 }

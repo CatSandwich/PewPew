@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Enemy;
 using Enemy.Data;
 using Enemy.Formations;
@@ -91,6 +93,9 @@ namespace Singletons
         /// <summary> Called when a Boss type Enemy is destroyed. </summary>
         public void OnBossEnemyDestroyed(WaveEnemyScript enemy, bool wasKilled)
         {
+            var subordinates = FindObjectsOfType<SubordinateEnemyScript>().Where(s => s.Leader == enemy && s.Data.DiesWithBoss);
+            foreach (var subordinate in subordinates) subordinate.TakeDamage(float.MaxValue, false);
+
             var waveType = enemy.WaveType;
             if (!RemoveEnemy(enemy, true)) return;
             if (wasKilled) HandleEnemyKilled(waveType, enemy);
@@ -205,6 +210,21 @@ namespace Singletons
                                 _currentFormation.Behaviour.GetRightBounds());
         }
 
+        private Vector3 GetSpawnPlacement(EnemyFormationPlacement placement)
+        {
+            switch (placement.SpawnPosition)
+            {
+                case EnemyFormationSpawnPosition.Top:
+                    return new Vector3(GetSpawnXClamped(placement), _topRightBounds.y + 1f + placement.Offset.y, 0f);
+                case EnemyFormationSpawnPosition.Left:
+                    return new Vector3(_bottomLeftBounds.x - 1f, _topRightBounds.y - 1f + placement.Offset.y, 0f);
+                case EnemyFormationSpawnPosition.Right:
+                    return new Vector3(_topRightBounds.x + 1f, _topRightBounds.y - 1f + placement.Offset.y, 0f);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
         /// <summary> Spawns the next row of enemies. </summary>
         private void SpawnEnemy()
         {
@@ -225,7 +245,7 @@ namespace Singletons
                 // Spawn all the enemies in this row
                 foreach (var placement in _enemies.Current)
                 {
-                    var spawn = new Vector3(GetSpawnXClamped(placement), _topRightBounds.y + 1f + placement.Offset.y, 0f);
+                    var spawn = GetSpawnPlacement(placement);
                     var enemy = WaveEnemyPool.Get();
                     var model = GetModel(placement.Enemy.Prefab);
                     enemy.gameObject.transform.position = spawn;
@@ -272,7 +292,7 @@ namespace Singletons
             _nextSpawn = Time.time + _currentFormation.GetSpacing();
         }
 
-        public void SpawnSubordinate(SubordinateData target, Vector3 position)
+        public void SpawnSubordinate(AbstractEnemyScript leader, SubordinateData target, Vector3 position)
         {
             var enemy = SubordinateEnemyPool.Get();
             var model = GetModel(target.Prefab);
@@ -297,6 +317,8 @@ namespace Singletons
             _currentEnemies.Add(enemy);
 
             enemy.Behaviour.PrepareBehaviour(enemy);
+
+            enemy.Leader = leader;
         }
 
         private WaveEnemyScript CreateWaveEnemy() => CreateEnemy<WaveEnemyScript>("Enemy");
@@ -400,11 +422,13 @@ namespace Singletons
             if (wasBoss) _currentBosses.Remove(enemy);
             _currentEnemies.Remove(enemy);
             WaveEnemyPool.Release(enemy);
+            enemy.Behaviour.ClearData(enemy);
             return true;
         }
         private bool RemoveEnemy(SubordinateEnemyScript enemy)
         {
             SubordinateEnemyPool.Release(enemy);
+            enemy.Behaviour.ClearData(enemy);
             return true;
         }
 
@@ -414,7 +438,6 @@ namespace Singletons
             ScoreKeeper.AddScore(enemy.Data.ScoreValue);
             DropScore(enemy.transform.position, enemy.Data.ScoreValue);
             DropCoins(enemy.transform.position, enemy.Data.CoinValue);
-            enemy.Behaviour.ClearData(enemy);
         }
         private void HandleEnemyKilled(SubordinateEnemyScript enemy)
         {
@@ -422,7 +445,6 @@ namespace Singletons
             ScoreKeeper.AddScore(enemy.Data.ScoreValue);
             DropScore(enemy.transform.position, enemy.Data.ScoreValue);
             DropCoins(enemy.transform.position, enemy.Data.CoinValue);
-            enemy.Behaviour.ClearData(enemy);
         }
 
         private void DropScore(Vector3 position, float score)

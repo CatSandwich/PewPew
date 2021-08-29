@@ -15,9 +15,9 @@ namespace Enemy.Formations
         public WaveEnemyData[] Enemies;
         public float Speed;
         public float Spacing;
-        public float DifficultyMin;
+        [Min(0)] public float DifficultyMin;
         public float DifficultyMax = float.MaxValue;
-        public int Count;
+        [Min(0)] public int Count;
 
         public float RankGap = 1f;
         public bool RandomizeSpawnX;

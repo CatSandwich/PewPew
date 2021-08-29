@@ -9,15 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7fcf850484731d14bb6712f4c1cdb3e1, type: 3}
-  m_Name: Boss Formation 1
+  m_Script: {fileID: 11500000, guid: 55af8bf72b2764f46b113b46ff73d0c9, type: 3}
+  m_Name: Boss 2 Formation
   m_EditorClassIdentifier: 
-  Behaviour: {fileID: 11400000, guid: 6ccc6475209562a45b86d47ccee517a8, type: 2}
+  Behaviour: {fileID: 11400000, guid: 1c4bc14847698a14a93ae7c52e5867f3, type: 2}
   EnemyFormationWaveType: 2
-  Enemies:
-  - {fileID: 11400000, guid: df56d7ddefd80394e8de057d02aea996, type: 2}
+  Enemy: {fileID: 11400000, guid: 2d161dd142558cb42841271c1f52fa63, type: 2}
   Speed: 3
-  Spacing: 0.5
   DifficultyMin: 0
-  DifficultyMax: 1e+37
-  Count: 1
+  DifficultyMax: 3.4028235e+38

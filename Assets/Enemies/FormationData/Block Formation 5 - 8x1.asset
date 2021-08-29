@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7bb7323c7254f8e48aaed7d592e89d40, type: 3}
+  m_Name: Block Formation 5 - 8x1
+  m_EditorClassIdentifier: 
+  Behaviour: {fileID: 11400000, guid: 3fd91fc9f5a0ad54b8e18e11529be7ae, type: 2}
+  EnemyFormationWaveType: 0
+  Enemies:
+  - {fileID: 11400000, guid: c2cdeb0e9c0f43e4bb858cad8c0694c8, type: 2}
+  Speed: 0.5
+  Spacing: 1.2
+  Spread: 0.6
+  DifficultyMin: 250
+  DifficultyMax: 3.4028235e+38
+  Width: 5
+  Height: 3
