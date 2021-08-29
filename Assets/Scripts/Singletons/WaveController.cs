@@ -183,6 +183,12 @@ namespace Singletons
             if (Time.time > _nextSpawn)
                 SpawnEnemy();
         }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+                _instance = null;
+        }
         #endregion
 
         #region Private Methods
