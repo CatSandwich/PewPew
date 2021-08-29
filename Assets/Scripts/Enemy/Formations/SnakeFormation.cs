@@ -6,18 +6,18 @@ using UnityEngine;
 
 namespace Enemy.Formations
 {
-    [CreateAssetMenu(menuName = "Enemies/Formations/SingleFileFormation")]
+    [CreateAssetMenu(menuName = "Enemies/Formations/SnakeFormation")]
     // ReSharper disable once UnusedMember.Global
-    public class SingleFileFormation : AbstractFormation
+    public class SnakeFormation : AbstractFormation
     {
         public EnemyFormationWaveType EnemyFormationWaveType;
 
         public WaveEnemyData[] Enemies;
-        public float Speed = 1;
-        public float Spacing = 1;
+        public float Speed = 1f;
+        public float Spacing = 1f;
         [Min(0)] public float DifficultyMin;
         public float DifficultyMax = float.MaxValue;
-        [Min(1)] public int Count = 1;
+        [Min(0)] public int Count;
 
         private bool _initialized;
         private WaveEnemyData[] _enemies;
@@ -45,7 +45,7 @@ namespace Enemy.Formations
         public override float GetDifficultyMin() => DifficultyMin;
         public override float GetDifficultyMax() => DifficultyMax;
         public override WaveEnemyData[] GetEnemies() => Enemies;
-        public override EnemyFormationType GetFormationType() => EnemyFormationType.SingleFile;
+        public override EnemyFormationType GetFormationType() => EnemyFormationType.Snake;
         public override IEnumerable<EnemyFormationPlacement[]> GetNextEnemies() => _enemies.Select(enemy => new[] { new EnemyFormationPlacement(enemy, _spawnOffset) });
         public override float GetSpacing() => Spacing;
         public override float GetSpeed() => Speed;

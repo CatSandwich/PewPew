@@ -11,6 +11,8 @@ namespace Enemy
 
         public override event Action<AbstractEnemyScript> Destroyed;
 
+        public AbstractEnemyScript Leader;
+
         public override void TakeDamage(float damage, bool sourceIsPlayer = true)
         {
             if (!WaveController.RunIsAlive) return;

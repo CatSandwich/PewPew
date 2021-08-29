@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55af8bf72b2764f46b113b46ff73d0c9, type: 3}
+  m_Name: Boss 2 Formation
+  m_EditorClassIdentifier: 
+  Behaviour: {fileID: 11400000, guid: 1c4bc14847698a14a93ae7c52e5867f3, type: 2}
+  EnemyFormationWaveType: 0
+  Enemy: {fileID: 11400000, guid: 2d161dd142558cb42841271c1f52fa63, type: 2}
+  Speed: 3
+  DifficultyMin: 0
+  DifficultyMax: 3.4028235e+38

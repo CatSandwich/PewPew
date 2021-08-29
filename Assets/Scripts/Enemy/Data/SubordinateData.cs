@@ -12,5 +12,7 @@ namespace Enemy.Data
         public float Speed = 1f;
 
         public float SpawnTimer = 1f;
+
+        public bool DiesWithBoss;
     }
 }
