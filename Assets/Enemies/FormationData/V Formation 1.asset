@@ -20,5 +20,5 @@ MonoBehaviour:
   Spacing: 1
   Spread: 0.5
   DifficultyMin: 0
-  DifficultyMax: 3.4028235e+38
+  DifficultyMax: 200
   Count: 5

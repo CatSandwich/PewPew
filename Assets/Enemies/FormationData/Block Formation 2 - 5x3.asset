@@ -20,6 +20,6 @@ MonoBehaviour:
   Spacing: 1.2
   Spread: 0.6
   DifficultyMin: 50
-  DifficultyMax: 3.4028235e+38
+  DifficultyMax: 500
   Width: 5
   Height: 3

@@ -118,10 +118,38 @@ namespace Singletons
         #endregion
 
         #region Unity Methods
+
+        private void OnValidate()
+        {
+            _validateWaves();
+        }
+
+        private void _validateWaves()
+        {
+            #if UNITY_EDITOR
+            for (var i = 0f; i < 10000f; i += 0.1f)
+            {
+                var wave = WaveList.FirstOrDefault(s => s != null &&
+                                                        s.GetDifficultyMax() >= i && s.GetDifficultyMin() <= i
+                                                        && s.GetWaveType() == EnemyFormationWaveType.Normal);
+                if (wave != null)
+                {
+                    i = wave.GetDifficultyMax();
+                    continue;
+                }
+
+                Debug.LogError($"[{GetType()}]: There are no waves supporting Difficulty: {i:N}!");
+                break;
+            }
+            #endif
+        }
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
                 Destroy(gameObject);
+
+            _validateWaves();
         }
         private void Start()
         {
