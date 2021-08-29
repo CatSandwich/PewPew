@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Enemy;
@@ -209,6 +210,21 @@ namespace Singletons
                                 _currentFormation.Behaviour.GetRightBounds());
         }
 
+        private Vector3 GetSpawnPlacement(EnemyFormationPlacement placement)
+        {
+            switch (placement.SpawnPosition)
+            {
+                case EnemyFormationSpawnPosition.Top:
+                    return new Vector3(GetSpawnXClamped(placement), _topRightBounds.y + 1f + placement.Offset.y, 0f);
+                case EnemyFormationSpawnPosition.Left:
+                    return new Vector3(_bottomLeftBounds.x - 1f, _topRightBounds.y - 1f + placement.Offset.y, 0f);
+                case EnemyFormationSpawnPosition.Right:
+                    return new Vector3(_topRightBounds.x + 1f, _topRightBounds.y - 1f + placement.Offset.y, 0f);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
         /// <summary> Spawns the next row of enemies. </summary>
         private void SpawnEnemy()
         {
@@ -229,7 +245,7 @@ namespace Singletons
                 // Spawn all the enemies in this row
                 foreach (var placement in _enemies.Current)
                 {
-                    var spawn = new Vector3(GetSpawnXClamped(placement), _topRightBounds.y + 1f + placement.Offset.y, 0f);
+                    var spawn = GetSpawnPlacement(placement);
                     var enemy = WaveEnemyPool.Get();
                     var model = GetModel(placement.Enemy.Prefab);
                     enemy.gameObject.transform.position = spawn;

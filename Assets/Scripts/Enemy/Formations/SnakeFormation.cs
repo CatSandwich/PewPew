@@ -22,6 +22,7 @@ namespace Enemy.Formations
         private bool _initialized;
         private WaveEnemyData[] _enemies;
         private Vector2 _spawnOffset;
+        private EnemyFormationSpawnPosition _spawnPosition;
 
         public override void Initialize()
         {
@@ -46,13 +47,16 @@ namespace Enemy.Formations
         public override float GetDifficultyMax() => DifficultyMax;
         public override WaveEnemyData[] GetEnemies() => Enemies;
         public override EnemyFormationType GetFormationType() => EnemyFormationType.Snake;
-        public override IEnumerable<EnemyFormationPlacement[]> GetNextEnemies() => _enemies.Select(enemy => new[] { new EnemyFormationPlacement(enemy, _spawnOffset) });
+        public override IEnumerable<EnemyFormationPlacement[]> GetNextEnemies() => _enemies.Select(enemy => new[] { new EnemyFormationPlacement(enemy, _spawnOffset, _spawnPosition) });
         public override float GetSpacing() => Spacing;
         public override float GetSpeed() => Speed;
         public override EnemyFormationWaveType GetWaveType() => EnemyFormationWaveType;
         public override void ResetFormation()
         {
-            _spawnOffset = new Vector2(Random.Range(WaveController.LeftBounds, WaveController.RightBounds), 0f);
+            _spawnOffset = new Vector2(0f, -1);
+            _spawnPosition = Random.Range(0, 2) > 0
+                ? EnemyFormationSpawnPosition.Left
+                : EnemyFormationSpawnPosition.Right;
         }
     }
 }

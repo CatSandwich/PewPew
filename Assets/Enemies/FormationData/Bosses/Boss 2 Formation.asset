@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Boss 2 Formation
   m_EditorClassIdentifier: 
   Behaviour: {fileID: 11400000, guid: 1c4bc14847698a14a93ae7c52e5867f3, type: 2}
-  EnemyFormationWaveType: 0
+  EnemyFormationWaveType: 2
   Enemy: {fileID: 11400000, guid: 2d161dd142558cb42841271c1f52fa63, type: 2}
   Speed: 3
   DifficultyMin: 0
