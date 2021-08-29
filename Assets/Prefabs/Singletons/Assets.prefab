@@ -48,3 +48,7 @@ MonoBehaviour:
   Ray: {fileID: 7395811369145963426, guid: 6d379dba55e2f394c8b96f8ed20f8b2f, type: 3}
   ElectricField: {fileID: 7395811369145963426, guid: 0fe0b8f5d2b3c3b459ed7eab9540c109, type: 3}
   ScoreDrop: {fileID: 4700979248857267347, guid: d9e73a150329e5e4b80d5951a79d4f0f, type: 3}
+  CoinDrop: {fileID: 8248961691631395977, guid: 49d37b0ec1a676a40a95805edf79ec47, type: 3}
+  Coin1: {fileID: 21300000, guid: 58de7530e3da84247afec8cfa28716ee, type: 3}
+  Coin5: {fileID: 21300000, guid: dcc58f8abdf39c544ab48ca36855f44a, type: 3}
+  Coin10: {fileID: 21300000, guid: 40cdeafa3701e4a4fa703ea1cca4492b, type: 3}
